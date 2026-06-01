@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { PwaProvider } from "@/components/PwaProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,16 +21,34 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "AMUR.BG — Доставка на цветя в Бургас",
+  title: "AMUR.BG — Dostavka na tsveta v Burgas",
   description:
-    'Премиум доставка на букети в Бургас за под 2 часа. Протокол „Бели ръкавици“ — елегантно връчване с фото потвърждение.',
-  keywords: ["цветя", "Бургас", "доставка цветя", "букети", "amur.bg"],
+    "Premium dostavka na buketi v Burgas za pod 2 chasa. Protokol Beli rakavitsi.",
+  keywords: ["tsvetya", "Burgas", "dostavka tsvetya", "buketi", "amur.bg"],
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AMUR",
+  },
   openGraph: {
     title: "AMUR.BG",
-    description: "Премиум доставка на букети в Бургас",
+    description: "Premium dostavka na buketi v Burgas",
     locale: "bg_BG",
     type: "website",
   },
+  icons: {
+    icon: "/icons/icon-192.svg",
+    apple: "/icons/icon-192.svg",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#C5A059",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -44,6 +63,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
+        <PwaProvider />
       </body>
     </html>
   );

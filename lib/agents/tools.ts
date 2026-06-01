@@ -2,7 +2,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import { sendWhatsAppText } from "@/lib/whatsapp";
 import { embed } from "@/lib/agents/embeddings";
 
-const ADMIN_PHONE = process.env.ADMIN_WHATSAPP_PHONE ?? "";
+const ADMIN_PHONE = process.env.WHATSAPP_ADMIN_PHONE ?? "";
 
 /* ── Financial summary ─────────────────────────────────────────── */
 
@@ -256,7 +256,7 @@ export async function saveReport(
 
 export async function notifyAdmin(message: string): Promise<void> {
   if (!ADMIN_PHONE) {
-    console.warn("[agents] ADMIN_WHATSAPP_PHONE not set — notification skipped");
+    console.warn("[agents] WHATSAPP_ADMIN_PHONE not set — notification skipped");
     return;
   }
   await sendWhatsAppText(ADMIN_PHONE, message);

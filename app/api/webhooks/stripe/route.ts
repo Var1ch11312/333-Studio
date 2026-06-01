@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Stripe } from "stripe";
 import { getStripeClient } from "@/lib/stripe";
 import { createServerClient } from "@/lib/supabase-server";
-import { notifyDispatcher, buildOrderCard } from "@/lib/viber";
+import { routeOrderToHub } from "@/lib/order-routing";
 
 /* App Router: read raw body for Stripe signature verification */
 export async function POST(req: NextRequest) {
@@ -52,16 +52,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Order update failed" }, { status: 500 });
     }
 
-    await notifyDispatcher(
-      buildOrderCard({
-        id: order.id,
-        customer_name: order.customer_name,
-        customer_phone: order.customer_phone,
-        delivery_address: order.delivery_address,
-        total_amount_eur: Number(order.total_amount_eur),
-        payment_method: "card",
-        notes: order.notes,
-      })
+    // Route to nearest hub via WhatsApp (non-blocking)
+    routeOrderToHub(order.id).catch((err) =>
+      console.error("[Stripe Webhook] Routing failed:", err)
     );
   }
 

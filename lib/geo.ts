@@ -4,7 +4,7 @@ const ORS_GEOCODE = "https://api.openrouteservice.org/geocode/search";
 const BURGAS = { lat: 42.4943, lng: 27.4726 };
 const MAX_KM = 15;
 
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;

@@ -12,57 +12,45 @@ import { isDualPriceRequired } from "@/lib/constants";
 import { Clock, MapPin, Shield, Camera } from "lucide-react";
 import Link from "next/link";
 
-/* ─── Placeholder catalog (replaced by Supabase data post-sprint) ─── */
-const PLACEHOLDER_PRODUCTS = [
-  {
-    id: "1",
-    title: "Розова Елегантност",
-    description: "25 бели и розови рози, ароматни лилии, gypsophila",
-    price_eur: 45,
-    flower_count: 25,
-    tag: "Бестселър",
-  },
-  {
-    id: "2",
-    title: "Алена Страст",
-    description: "21 червени рози Ecuador, бабий лен, декоративна зеленина",
-    price_eur: 55,
-    flower_count: 21,
-    tag: null,
-  },
-  {
-    id: "3",
-    title: "Бяла Приказка",
-    description: "17 бели рози, орхидея Dendrobium, еустома",
-    price_eur: 65,
-    flower_count: 17,
-    tag: "Премиум",
-  },
-  {
-    id: "4",
-    title: "Пролетна Радост",
-    description: "Сезонни цветя — лалета, нарциси, хиацинти",
-    price_eur: 39,
-    flower_count: 15,
-    tag: null,
-  },
-  {
-    id: "5",
-    title: "Корпоративен Шик",
-    description: "51 смесени рози, монобукет с луксозна опаковка",
-    price_eur: 110,
-    flower_count: 51,
-    tag: "B2B",
-  },
-  {
-    id: "6",
-    title: "Изненада за Именник",
-    description: "Персонализиран букет — свободен избор на флориста",
-    price_eur: 35,
-    flower_count: 11,
-    tag: "Именен ден",
-  },
+type Product = {
+  id: string;
+  title: string;
+  description: string | null;
+  price_eur: number;
+  flower_count: number;
+  tag: string | null;
+  image_url: string | null;
+};
+
+const FALLBACK_PRODUCTS: Product[] = [
+  { id: "1", title: "Розова Елегантност",  description: "25 бели и розови рози, ароматни лилии, gypsophila",        price_eur: 45,  flower_count: 25, tag: "Бестселър",  image_url: null },
+  { id: "2", title: "Алена Страст",        description: "21 червени рози Ecuador, бабий лен, декоративна зеленина", price_eur: 55,  flower_count: 21, tag: null,         image_url: null },
+  { id: "3", title: "Бяла Приказка",       description: "17 бели рози, орхидея Dendrobium, еустома",                price_eur: 65,  flower_count: 17, tag: "Премиум",    image_url: null },
+  { id: "4", title: "Пролетна Радост",     description: "Сезонни цветя — лалета, нарциси, хиацинти",               price_eur: 39,  flower_count: 15, tag: null,         image_url: null },
+  { id: "5", title: "Корпоративен Шик",    description: "51 смесени рози, монобукет с луксозна опаковка",           price_eur: 110, flower_count: 51, tag: "B2B",        image_url: null },
+  { id: "6", title: "Изненада за Именник", description: "Персонализиран букет — свободен избор на флориста",        price_eur: 35,  flower_count: 11, tag: "Именен ден", image_url: null },
 ];
+
+async function fetchProducts(): Promise<Product[]> {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return FALLBACK_PRODUCTS;
+
+    const res = await fetch(
+      `${url}/rest/v1/products?select=id,title,description,price_eur,flower_count,tag,image_url&active=eq.true&order=price_eur.asc`,
+      {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+        next: { revalidate: 60 },
+      }
+    );
+    if (!res.ok) return FALLBACK_PRODUCTS;
+    const data: Product[] = await res.json();
+    return data.length ? data : FALLBACK_PRODUCTS;
+  } catch {
+    return FALLBACK_PRODUCTS;
+  }
+}
 
 const TRUST_PILLARS = [
   {
@@ -88,7 +76,9 @@ const TRUST_PILLARS = [
 ];
 
 
-export default function StorefrontPage() {
+export default async function StorefrontPage() {
+  const products = await fetchProducts();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* ── Header ── */}
@@ -190,16 +180,25 @@ export default function StorefrontPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {PLACEHOLDER_PRODUCTS.map((product) => (
+              {products.map((product) => (
                 <Card
                   key={product.id}
                   className="group overflow-hidden transition-colors"
                 >
-                  {/* Product image placeholder */}
+                  {/* Product image */}
                   <div className="relative h-56 bg-secondary flex items-center justify-center overflow-hidden">
-                    <span className="font-serif text-6xl text-primary select-none" style={{ opacity: 0.2 }}>
-                      ✿
-                    </span>
+                    {product.image_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={product.image_url}
+                        alt={product.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="font-serif text-6xl text-primary select-none" style={{ opacity: 0.2 }}>
+                        ✿
+                      </span>
+                    )}
                     {product.tag && (
                       <span className="absolute top-3 left-3 text-[10px] tracking-widest uppercase bg-primary text-primary-foreground px-2 py-1 rounded-sm">
                         {product.tag}

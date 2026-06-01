@@ -24,6 +24,14 @@ export async function POST(req: NextRequest) {
     payment_method?: "card" | "cod";
     nameday_optin?: boolean;
     items?: OrderItem[];
+    delivery_for_self?: boolean;
+    recipient_name?: string;
+    recipient_phone?: string;
+    greeting_message?: string;
+    delivery_schedule?: "asap" | "scheduled";
+    delivery_date?: string;
+    delivery_time_window?: string;
+    promo_code?: string;
   };
 
   try {
@@ -40,6 +48,14 @@ export async function POST(req: NextRequest) {
     payment_method = "card",
     nameday_optin = false,
     items = [],
+    delivery_for_self = true,
+    recipient_name,
+    recipient_phone,
+    greeting_message,
+    delivery_schedule = "asap",
+    delivery_date,
+    delivery_time_window,
+    promo_code,
   } = body;
 
   /* ── Validate required fields ── */
@@ -98,6 +114,14 @@ export async function POST(req: NextRequest) {
       nameday_optin,
       flower_count_validated: true,
       status: "pending",
+      delivery_for_self,
+      recipient_name: recipient_name?.trim() ?? null,
+      recipient_phone: recipient_phone?.trim() ?? null,
+      greeting_message: greeting_message?.trim() ?? null,
+      delivery_schedule,
+      delivery_date: delivery_date ?? null,
+      delivery_time_window: delivery_time_window ?? null,
+      promo_code: promo_code?.trim() ?? null,
     })
     .select()
     .single();

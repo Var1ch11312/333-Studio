@@ -19,7 +19,7 @@ const ALL = "Всички";
 /* ─── Product card ───────────────────────────────────── */
 function ProductCard({ product }: { product: CatalogProduct }) {
   return (
-    <Link href={`/checkout?product=${product.id}`} className="block group">
+    <Link href={`/product/${product.id}`} className="block group">
       <div
         className="rounded-2xl overflow-hidden flex flex-col h-full transition-all duration-500 group-hover:-translate-y-1"
         style={{

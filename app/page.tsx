@@ -1,10 +1,9 @@
 import { ParallaxHero } from "@/components/ParallaxHero";
 import { BottomNav } from "@/components/BottomNav";
+import { SiteHeader } from "@/components/SiteHeader";
 import { CatalogClient, type CatalogProduct } from "@/components/CatalogClient";
 import { isDualPriceRequired } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Shield, Camera } from "lucide-react";
-import Link from "next/link";
 
 /* ─── Types ──────────────────────────────────────────── */
 type Product = CatalogProduct;
@@ -51,45 +50,7 @@ export default async function StorefrontPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0A0907" }}>
 
-      {/* ── Header ── */}
-      <header
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          background: "rgba(10,9,7,0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(197,160,89,0.1)",
-        }}
-      >
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex flex-col leading-none">
-            <span className="font-serif text-2xl font-bold tracking-widest text-primary">
-              AMUR
-            </span>
-            <span
-              className="text-[9px] tracking-[0.35em] uppercase"
-              style={{ color: "rgba(197,160,89,0.5)" }}
-            >
-              Бургас · Цветя с характер
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-8 text-xs tracking-wider text-muted-foreground uppercase">
-            <a href="#catalog" className="hover:text-foreground transition-colors">
-              Каталог
-            </a>
-            <a href="#about" className="hover:text-foreground transition-colors">
-              За нас
-            </a>
-          </nav>
-
-          <Link href="/checkout">
-            <Button size="sm" className="text-xs tracking-wider">
-              Поръчай
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">
 

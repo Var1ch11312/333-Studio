@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* === AMUR.BG — OLD MONEY DESIGN SYSTEM === */
+
+  /* Core palette */
+  --color-background:            #1A1A1A;
+  --color-foreground:            #F9F6F0;
+
+  /* Card / surface */
+  --color-card:                  #222222;
+  --color-card-foreground:       #F9F6F0;
+
+  /* UI chrome */
+  --color-border:                #333333;
+  --color-input:                 #252525;
+  --color-ring:                  #C5A059;
+
+  /* Primary — muted gold / champagne */
+  --color-primary:               #C5A059;
+  --color-primary-foreground:    #1A1A1A;
+
+  /* Secondary — dark surface */
+  --color-secondary:             #272727;
+  --color-secondary-foreground:  #F9F6F0;
+
+  /* Muted — dim text / placeholders */
+  --color-muted:                 #272727;
+  --color-muted-foreground:      #8A8880;
+
+  /* Accent — same gold family */
+  --color-accent:                #C5A059;
+  --color-accent-foreground:     #1A1A1A;
+
+  /* Destructive */
+  --color-destructive:           #7A1D1D;
+  --color-destructive-foreground: #F9F6F0;
+
+  /* Typography */
+  --font-sans:   var(--font-geist-sans);
+  --font-serif:  var(--font-playfair);
+  --font-mono:   var(--font-geist-mono);
+}
+
+/* ─── Base reset ─────────────────────────────── */
+body {
+  background-color: #1A1A1A;
+  color: #F9F6F0;
+  font-family: var(--font-geist-sans, Arial, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Gold divider utility ───────────────────── */
+.divider-gold {
+  border-color: #C5A059;
+  opacity: 0.3;
+}
+
+/* ─── Subtle gold glow on focus ─────────────── */
+.focus-gold:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #C5A059;
+}

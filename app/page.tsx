@@ -7,7 +7,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { formatDualPrice, isDualPriceRequired } from "@/lib/constants";
+import { DualPrice } from "@/components/DualPrice";
+import { isDualPriceRequired } from "@/lib/constants";
 import { Clock, MapPin, Shield, Camera } from "lucide-react";
 import Link from "next/link";
 
@@ -86,19 +87,6 @@ const TRUST_PILLARS = [
   },
 ];
 
-function PriceDisplay({ priceEur }: { priceEur: number }) {
-  const { eur, bgn } = formatDualPrice(priceEur);
-  const showDual = isDualPriceRequired();
-
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-lg font-semibold text-primary">{eur}</span>
-      {showDual && (
-        <span className="text-xs text-muted-foreground">{bgn}</span>
-      )}
-    </div>
-  );
-}
 
 export default function StorefrontPage() {
   return (
@@ -230,7 +218,7 @@ export default function StorefrontPage() {
                   </CardHeader>
 
                   <CardContent className="pb-0">
-                    <PriceDisplay priceEur={product.price_eur} />
+                    <DualPrice priceEur={product.price_eur} />
                   </CardContent>
 
                   <CardFooter className="pt-4">

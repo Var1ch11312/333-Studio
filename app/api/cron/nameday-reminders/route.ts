@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase-server";
 import { notifyViber, buildNameDayReminder } from "@/lib/viber";
 
-/* Protected by CRON_SECRET — set in env and in Vercel cron header */
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return false;
-  const auth = req.headers.get("authorization");
-  return auth === `Bearer ${secret}`;
+  return req.headers.get("authorization") === `Bearer ${secret}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -16,12 +14,14 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = createServerClient();
+  const stats = { calendarSent: 0, personalSent: 0 };
 
-  /* Tomorrow's name-days (send reminder the day before) */
+  /* ── 1. Общий болгарский календарь (nameday_optins) ─────── */
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const month = tomorrow.getMonth() + 1;
   const day = tomorrow.getDate();
+  const today = tomorrow.toISOString().slice(0, 10);
 
   const { data: namedays } = await supabase
     .from("name_days")
@@ -29,41 +29,65 @@ export async function POST(req: NextRequest) {
     .eq("month", month)
     .eq("day", day);
 
-  if (!namedays?.length) {
-    return NextResponse.json({ sent: 0, message: "No name-days tomorrow" });
-  }
+  if (namedays?.length) {
+    const names = namedays.map((r) => r.name);
+    const message = buildNameDayReminder(names);
 
-  const names = namedays.map((r) => r.name);
-  const message = buildNameDayReminder(names);
-  const today = tomorrow.toISOString().slice(0, 10);
+    const { data: optins } = await supabase
+      .from("nameday_optins")
+      .select("phone, viber_id")
+      .not(
+        "phone",
+        "in",
+        `(SELECT phone FROM nameday_reminders_sent WHERE sent_date = '${today}')`
+      );
 
-  /* Fetch opt-in contacts that haven't received a reminder today */
-  const { data: optins } = await supabase
-    .from("nameday_optins")
-    .select("phone, viber_id")
-    .not(
-      "phone",
-      "in",
-      `(SELECT phone FROM nameday_reminders_sent WHERE sent_date = '${today}')`
-    );
-
-  if (!optins?.length) {
-    return NextResponse.json({ sent: 0, message: "All contacts already notified" });
-  }
-
-  let sent = 0;
-  for (const contact of optins) {
-    if (contact.viber_id) {
-      await notifyViber(contact.viber_id, message);
-      sent++;
+    for (const contact of optins ?? []) {
+      if (contact.viber_id) {
+        await notifyViber(contact.viber_id, message);
+        stats.calendarSent++;
+      }
+      await supabase.from("nameday_reminders_sent").upsert(
+        { phone: contact.phone, sent_date: today, names: names.join(", ") },
+        { onConflict: "phone,sent_date" }
+      );
     }
-
-    /* Record send to prevent duplicates */
-    await supabase.from("nameday_reminders_sent").upsert(
-      { phone: contact.phone, sent_date: today, names: names.join(", ") },
-      { onConflict: "phone,sent_date" }
-    );
   }
 
-  return NextResponse.json({ sent, names, date: today });
+  /* ── 2. Персональные поводы (saved_occasions) ────────────── */
+  /* Ищем поводы, для которых наступает день reminder_days_before */
+  /* Упрощённо: ищем тех, у кого month/day = tomorrow (2-day reminder) */
+  const { data: personal } = await supabase
+    .from("saved_occasions")
+    .select("customer_phone, recipient_name")
+    .eq("month", month)
+    .eq("day", day);
+
+  for (const occ of personal ?? []) {
+    /* Ищем Viber ID клиента через nameday_optins */
+    const { data: optin } = await supabase
+      .from("nameday_optins")
+      .select("viber_id")
+      .eq("phone", occ.customer_phone)
+      .single();
+
+    if (optin?.viber_id) {
+      await notifyViber(
+        optin.viber_id,
+        buildPersonalOccasionReminder(occ.recipient_name)
+      );
+      stats.personalSent++;
+    }
+  }
+
+  return NextResponse.json({ ...stats, date: today });
+}
+
+function buildPersonalOccasionReminder(recipientName: string): string {
+  return [
+    `Утре е именен ден на ${recipientName}!`,
+    ``,
+    `Не забравяйте да ги изненадате — доставяме букет в Бургас за под 2 часа.`,
+    `Поръчайте на amur.bg`,
+  ].join("\n");
 }

@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { formatDualPrice, isDualPriceRequired, isOddFlowerCount } from "@/lib/constants";
+import { isOddFlowerCount } from "@/lib/constants";
+import { DualPrice } from "@/components/DualPrice";
+import { OddFlowerModal } from "@/components/OddFlowerModal";
 import {
   ArrowLeft,
   CreditCard,
@@ -13,6 +15,7 @@ import {
   AlertTriangle,
   Loader2,
 } from "lucide-react";
+/* AlertTriangle сохраняем — используется в error-блоке ниже */
 import Link from "next/link";
 import type { PaymentMethod } from "@/types";
 
@@ -29,6 +32,106 @@ const CATALOG: Record<
   "5": { title: "Корпоративен Шик", price_eur: 110, flower_count: 51 },
   "6": { title: "Изненада за Именник", price_eur: 35, flower_count: 11 },
 };
+
+/* ── Коллапсируемая форма сохранения личного повода ── */
+function SaveOccasionBlock({ customerPhone }: { customerPhone: string }) {
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [occasion, setOccasion] = useState({
+    recipient_name: "",
+    month: "",
+    day: "",
+  });
+
+  const handleSave = async () => {
+    if (!customerPhone || !occasion.recipient_name || !occasion.month || !occasion.day) return;
+    setSaving(true);
+    await fetch("/api/occasions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_phone: customerPhone,
+        recipient_name: occasion.recipient_name,
+        month: Number(occasion.month),
+        day: Number(occasion.day),
+      }),
+    });
+    setSaving(false);
+    setSaved(true);
+  };
+
+  if (saved) {
+    return (
+      <div className="text-xs text-primary border border-primary rounded p-3" style={{ borderColor: "rgba(197,160,89,0.4)" }}>
+        ✓ Запазихме именния ден на {occasion.recipient_name} — ще ви напомним 2 дни преди!
+      </div>
+    );
+  }
+
+  return (
+    <div className="border border-border rounded overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
+      >
+        <span>🎂 Запомнете именния ден на близък човек</span>
+        <span>{open ? "−" : "+"}</span>
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 flex flex-col gap-3 border-t border-border pt-3">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Ще ви изпратим напомняне 2 дни преди датата, за да не пропуснете важния повод.
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-muted-foreground">Име на получателя</label>
+            <Input
+              placeholder="Мария, Георги..."
+              value={occasion.recipient_name}
+              onChange={(e) => setOccasion((o) => ({ ...o, recipient_name: e.target.value }))}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-muted-foreground">Месец (1–12)</label>
+              <Input
+                type="number"
+                min={1}
+                max={12}
+                placeholder="5"
+                value={occasion.month}
+                onChange={(e) => setOccasion((o) => ({ ...o, month: e.target.value }))}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-muted-foreground">Ден (1–31)</label>
+              <Input
+                type="number"
+                min={1}
+                max={31}
+                placeholder="6"
+                value={occasion.day}
+                onChange={(e) => setOccasion((o) => ({ ...o, day: e.target.value }))}
+              />
+            </div>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleSave}
+            disabled={saving || !occasion.recipient_name || !occasion.month || !occasion.day}
+            className="w-fit"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Запази повода"}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -48,10 +151,9 @@ export function CheckoutContent() {
   const [nameDayConsent, setNameDayConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showOddModal, setShowOddModal] = useState(false);
 
   const totalEur = product.price_eur + DELIVERY_FEE_EUR;
-  const { eur: totalEurFmt, bgn: totalBgnFmt } = formatDualPrice(totalEur);
-  const showDual = isDualPriceRequired();
   const flowerCountValid = isOddFlowerCount(product.flower_count);
 
   useEffect(() => {
@@ -61,7 +163,12 @@ export function CheckoutContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gdprConsent || !flowerCountValid) return;
+    if (!gdprConsent) return;
+    /* Показываем блокирующий модал вместо тихого disabled */
+    if (!flowerCountValid) {
+      setShowOddModal(true);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -110,6 +217,13 @@ export function CheckoutContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {showOddModal && (
+        <OddFlowerModal
+          flowerCount={product.flower_count}
+          onClose={() => setShowOddModal(false)}
+        />
+      )}
+
       <header className="border-b border-border py-4 px-4">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <Link href="/">
@@ -282,6 +396,9 @@ export function CheckoutContent() {
                 </label>
               </div>
 
+              {/* Персональный повод — saved_occasions */}
+              <SaveOccasionBlock customerPhone={form.customer_phone} />
+
               {error && (
                 <div className="flex items-start gap-2 p-3 rounded border border-destructive text-destructive-foreground bg-destructive text-xs">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -316,37 +433,18 @@ export function CheckoutContent() {
                 <CardTitle className="text-base">Резюме</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
-                {!flowerCountValid && (
-                  <div className="flex items-start gap-2 p-3 rounded border border-destructive text-destructive-foreground bg-destructive text-xs">
-                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>
-                      Нечетен брой стъбла е задължителен — четни букети са
-                      знак за съболезнования.
-                    </span>
-                  </div>
-                )}
-
                 <div className="flex flex-col gap-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      {product.title}
-                    </span>
-                    <span>{formatDualPrice(product.price_eur).eur}</span>
+                  <div className="flex justify-between items-start">
+                    <span className="text-muted-foreground">{product.title}</span>
+                    <DualPrice priceEur={product.price_eur} layout="stacked" className="items-end" />
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-start">
                     <span className="text-muted-foreground">Доставка</span>
-                    <span>{formatDualPrice(DELIVERY_FEE_EUR).eur}</span>
+                    <DualPrice priceEur={DELIVERY_FEE_EUR} layout="stacked" className="items-end" />
                   </div>
-                  <div className="border-t border-border pt-3 flex justify-between font-semibold">
+                  <div className="border-t border-border pt-3 flex justify-between items-start font-semibold">
                     <span>Общо</span>
-                    <div className="flex flex-col items-end gap-0.5">
-                      <span className="text-primary">{totalEurFmt}</span>
-                      {showDual && (
-                        <span className="text-xs text-muted-foreground font-normal">
-                          {totalBgnFmt}
-                        </span>
-                      )}
-                    </div>
+                    <DualPrice priceEur={totalEur} layout="stacked" className="items-end" />
                   </div>
                 </div>
 
@@ -355,11 +453,9 @@ export function CheckoutContent() {
                   <span>Доставка до 2 часа + протокол „Бели ръкавици"</span>
                 </div>
 
-                {showDual && (
-                  <p className="text-[10px] text-muted-foreground border-t border-border pt-3 leading-relaxed">
-                    1 EUR = 1,95583 BGN · Задължително до 08.08.2026
-                  </p>
-                )}
+                <p className="text-[10px] text-muted-foreground border-t border-border pt-3 leading-relaxed">
+                  1 EUR = 1,95583 BGN · Задължително двойно показване до 08.08.2026
+                </p>
               </CardContent>
             </Card>
           </div>

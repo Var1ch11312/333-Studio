@@ -71,3 +71,30 @@ export type CartItem = {
   product: Product;
   quantity: number;
 };
+
+export type Courier = {
+  id: string;
+  name: string;
+  phone: string;
+  viber_id: string | null;
+  hub_id: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NameDayOptin = {
+  id: string;
+  phone: string;
+  name: string | null;
+  viber_id: string | null;
+  created_at: string;
+};
+
+/* Viber bot incoming event */
+export type ViberWebhookEvent = {
+  event: "message" | "subscribed" | "conversation_started" | "delivered" | "seen";
+  sender?: { id: string; name: string };
+  message?: { type: string; text: string };
+  timestamp: number;
+};

@@ -42,7 +42,54 @@
   --font-mono:   var(--font-geist-mono);
 }
 
-/* ─── Base reset ─────────────────────────────── */
+/* ─── Animations ─────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes goldPulse {
+  0%, 100% { opacity: 0.04; transform: scale(1); }
+  50%       { opacity: 0.09; transform: scale(1.08); }
+}
+
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.animate-fadeInUp { animation: fadeInUp 0.6s ease both; }
+.animate-gold-pulse { animation: goldPulse 4s ease-in-out infinite; }
+.animate-scroll-line { animation: scrollLine 1.8s ease-in-out infinite; }
+
+/* ─── Velvet card ────────────────────────────── */
+.velvet-card {
+  background: #1C1915;
+  border: 1px solid rgba(197,160,89,0.12);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.velvet-card:hover {
+  border-color: rgba(197,160,89,0.38);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(197,160,89,0.12);
+}
+
+/* ─── Gold shimmer text ──────────────────────── */
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #C5A059 0%, #F0D590 40%, #C5A059 60%, #9A7A38 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
 body {
   background-color: #1A1A1A;
   color: #F9F6F0;

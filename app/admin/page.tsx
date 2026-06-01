@@ -1,4 +1,5 @@
 import { AdminDashboard } from "./AdminDashboard";
+import { LogoutButton } from "@/components/LogoutButton";
 import Link from "next/link";
 
 export const metadata = {
@@ -19,10 +20,11 @@ export default function AdminPage() {
             </Link>
             <span className="text-muted-foreground text-sm">/ Администрация</span>
           </div>
-          <div className="flex gap-3 text-xs">
+          <div className="flex items-center gap-4 text-xs">
             <Link href="/hub" className="text-muted-foreground hover:text-foreground transition-colors">
               Флорист хъб →
             </Link>
+            <LogoutButton />
           </div>
         </div>
       </header>

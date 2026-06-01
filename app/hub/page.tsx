@@ -1,4 +1,5 @@
 import { HubDashboard } from "./HubDashboard";
+import { LogoutButton } from "@/components/LogoutButton";
 import Link from "next/link";
 
 export const metadata = {
@@ -18,9 +19,12 @@ export default function HubPage() {
             </Link>
             <span className="text-muted-foreground text-sm">/ Флорист хъб</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-            Активен · Бургас Център
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+              Активен · Бургас Център
+            </span>
+            <LogoutButton />
           </div>
         </div>
       </header>

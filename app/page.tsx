@@ -59,54 +59,124 @@ const CATEGORIES = ["Всички", "Рози", "Бели рози", "Смесе
 function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/checkout?product=${product.id}`} className="block group">
-      <div className="velvet-card rounded-xl overflow-hidden flex flex-col h-full">
+      <div
+        className="rounded-2xl overflow-hidden flex flex-col h-full transition-all duration-500 group-hover:-translate-y-1"
+        style={{
+          background: "#100C08",
+          border: "1px solid rgba(197,160,89,0.09)",
+          boxShadow: "0 0 0 0 rgba(197,160,89,0)",
+          transition: "transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease",
+        }}
+      >
+        {/* ── Image area: thick-glass inner glow ── */}
+        <div className="relative overflow-hidden" style={{ height: 224, background: "#080604" }}>
 
-        {/* Image area */}
-        <div
-          className="relative overflow-hidden"
-          style={{
-            height: 200,
-            background: "linear-gradient(150deg, #1E1A14 0%, #252018 50%, #1A1710 100%)",
-          }}
-        >
+          {/* Ambient bottom glow — light barely through thick glass */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 90% 55% at 50% 100%, rgba(175,95,20,0.26) 0%, rgba(12,8,4,0.92) 52%, #060402 100%)",
+              zIndex: 1,
+            }}
+          />
+
           {product.image_url ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={product.image_url}
               alt={product.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              style={{ filter: "brightness(0.78) saturate(0.9) sepia(0.06)", zIndex: 0 }}
             />
           ) : (
-            <>
-              {/* Elegant placeholder */}
-              <div className="absolute inset-0 flex items-center justify-center">
+            /* Candle-glow placeholder */
+            <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 0 }}>
+              {/* Outer halo */}
+              <div
+                className="absolute"
+                style={{
+                  width: 180, height: 180,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(197,130,40,0.09) 0%, transparent 65%)",
+                  left: "50%", top: "50%",
+                  transform: "translate(-50%, -52%)",
+                }}
+              />
+              {/* Inner glow orb with ✿ */}
+              <div
+                className="transition-transform duration-500 group-hover:scale-110"
+                style={{
+                  width: 72, height: 72,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(197,155,75,0.2) 0%, rgba(160,90,20,0.07) 55%, transparent 100%)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  marginTop: -8,
+                }}
+              >
                 <span
-                  className="font-serif select-none transition-transform duration-500 group-hover:scale-110"
-                  style={{ fontSize: 90, color: "#C5A059", opacity: 0.13 }}
+                  className="font-serif select-none"
+                  style={{
+                    fontSize: 40,
+                    color: "#C5A059",
+                    opacity: 0.55,
+                    textShadow: "0 0 18px rgba(197,160,89,0.45), 0 0 50px rgba(180,110,30,0.18)",
+                  }}
                 >
                   ✿
                 </span>
               </div>
-              {/* Gold shimmer sweep on hover */}
+              {/* Floor light pool */}
               <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                className="absolute bottom-0 left-0 right-0"
                 style={{
-                  background:
-                    "linear-gradient(110deg, transparent 20%, rgba(197,160,89,0.05) 50%, transparent 80%)",
+                  height: 80,
+                  background: "radial-gradient(ellipse 65% 100% at 50% 100%, rgba(150,80,15,0.2) 0%, transparent 100%)",
                 }}
               />
-            </>
+            </div>
           )}
+
+          {/* Top glass sheen — specular surface highlight */}
+          <div
+            className="absolute inset-x-0 top-0 pointer-events-none"
+            style={{
+              height: 72,
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, transparent 100%)",
+              zIndex: 2,
+            }}
+          />
+
+          {/* Bottom blend into card body */}
+          <div
+            className="absolute inset-x-0 bottom-0 pointer-events-none"
+            style={{
+              height: 64,
+              background: "linear-gradient(to top, #100C08 0%, transparent 100%)",
+              zIndex: 2,
+            }}
+          />
+
+          {/* Hover inner bloom */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 70% at 50% 45%, rgba(197,130,50,0.07) 0%, transparent 70%)",
+              zIndex: 3,
+            }}
+          />
 
           {/* Tag badge */}
           {product.tag && (
             <span
-              className="absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2 py-1 rounded-sm font-medium"
+              className="absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-sm font-medium"
               style={{
-                background: "rgba(197,160,89,0.15)",
-                border: "1px solid rgba(197,160,89,0.4)",
+                background: "rgba(8,5,2,0.78)",
+                border: "1px solid rgba(197,160,89,0.28)",
                 color: "#C5A059",
-                backdropFilter: "blur(8px)",
+                backdropFilter: "blur(12px)",
+                zIndex: 4,
               }}
             >
               {product.tag}
@@ -115,18 +185,21 @@ function ProductCard({ product }: { product: Product }) {
 
           {/* Stem count */}
           <span
-            className="absolute bottom-3 right-3 text-[10px]"
-            style={{ color: "rgba(249,246,240,0.35)" }}
+            className="absolute bottom-2.5 right-3 text-[10px]"
+            style={{ color: "rgba(249,246,240,0.35)", zIndex: 4 }}
           >
             {product.flower_count} стъбла
           </span>
         </div>
 
-        {/* Info area */}
-        <div className="flex flex-col flex-1 p-4 gap-3">
+        {/* ── Info area ── */}
+        <div
+          className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2.5"
+          style={{ background: "linear-gradient(to bottom, #100C08 0%, #0D0A06 100%)" }}
+        >
           <h3
             className="font-serif text-sm font-semibold leading-snug line-clamp-2"
-            style={{ color: "#F9F6F0" }}
+            style={{ color: "#EDE5D5" }}
           >
             {product.title}
           </h3>
@@ -134,7 +207,7 @@ function ProductCard({ product }: { product: Product }) {
           {product.description && (
             <p
               className="text-[11px] leading-relaxed line-clamp-2"
-              style={{ color: "rgba(249,246,240,0.38)" }}
+              style={{ color: "rgba(249,246,240,0.30)" }}
             >
               {product.description}
             </p>
@@ -144,13 +217,13 @@ function ProductCard({ product }: { product: Product }) {
             <DualPrice priceEur={product.price_eur} layout="stacked" />
           </div>
 
-          {/* Order button */}
           <div
-            className="mt-1 w-full text-center py-2.5 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-300"
+            className="mt-1.5 w-full text-center py-2.5 rounded-xl text-xs font-semibold tracking-wider uppercase"
             style={{
-              background: "linear-gradient(135deg, #C5A059 0%, #A8853E 100%)",
-              color: "#1A1A1A",
-              boxShadow: "0 2px 12px rgba(197,160,89,0.2)",
+              background: "linear-gradient(135deg, #BF9A50 0%, #96772F 100%)",
+              color: "#170F04",
+              boxShadow: "0 2px 16px rgba(197,160,89,0.16)",
+              transition: "box-shadow 0.3s ease, opacity 0.3s ease",
             }}
           >
             Поръчай

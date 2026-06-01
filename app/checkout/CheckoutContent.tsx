@@ -7,12 +7,11 @@ import { isOddFlowerCount } from "@/lib/constants";
 import { DualPrice } from "@/components/DualPrice";
 import { OddFlowerModal } from "@/components/OddFlowerModal";
 import {
-  ArrowLeft, CreditCard, Banknote, AlertTriangle,
+  ArrowLeft, CreditCard, AlertTriangle,
   Loader2, ChevronDown, ChevronUp, Plus, Check,
-  Calendar, Clock, Tag, EyeOff,
+  Calendar, Clock, Tag, EyeOff, Lock,
 } from "lucide-react";
 import Link from "next/link";
-import type { PaymentMethod } from "@/types";
 
 /* ─── Constants ────────────────────────────────────────── */
 const DELIVERY_FEE_EUR = 5;
@@ -154,7 +153,6 @@ export function CheckoutContent() {
   const [deliveryDate, setDeliveryDate] = useState("");
   const [timeWindow, setTimeWindow] = useState("");
   /* Payment + extras */
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [upsells, setUpsells] = useState<Record<string, boolean>>({});
   const [promoOpen, setPromoOpen] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -197,7 +195,7 @@ export function CheckoutContent() {
           customer_phone: phone,
           delivery_address: form.delivery_address,
           notes: form.notes,
-          payment_method: paymentMethod,
+          payment_method: "card",
           nameday_optin: nameDayConsent,
           items: [
             { product_id: productId, title: product.title, quantity: 1, unit_price_eur: product.price_eur, flower_count: product.flower_count },
@@ -215,10 +213,8 @@ export function CheckoutContent() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Грешка при създаване на поръчката"); return; }
-      if (data.type === "stripe" && data.checkoutUrl) {
+      if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
-      } else if (data.type === "cod") {
-        router.push(`/order-success?order_id=${data.orderId}&type=cod`);
       }
     } catch {
       setError("Мрежова грешка. Моля, опитайте отново.");
@@ -508,31 +504,31 @@ export function CheckoutContent() {
         </div>
 
         {/* ── STEP 5: Плащане ── */}
-        <Step number={5} title="Метод на плащане">
+        <Step number={5} title="Плащане">
           <div className="flex flex-col gap-3">
-            {([
-              { value: "card" as PaymentMethod, icon: CreditCard, label: "Карта / Apple Pay / Google Pay", sub: "Сигурно плащане чрез Stripe" },
-              { value: "cod" as PaymentMethod, icon: Banknote, label: "Наложен платеж (при доставка)", sub: "Плащане в евро (€) при получаване" },
-            ]).map(({ value, icon: Icon, label, sub }) => {
-              const active = paymentMethod === value;
-              return (
-                <label key={value} className="flex items-start gap-3 cursor-pointer rounded-xl p-3.5 transition-all"
-                  style={{ background: active ? "rgba(197,160,89,0.08)" : "transparent", border: `1px solid ${active ? "rgba(197,160,89,0.35)" : "rgba(197,160,89,0.1)"}` }}>
-                  <div className="w-4 h-4 rounded-full mt-0.5 shrink-0 flex items-center justify-center"
-                    style={{ border: `2px solid ${active ? "#C5A059" : "rgba(197,160,89,0.3)"}` }}>
-                    {active && <div className="w-2 h-2 rounded-full bg-primary" />}
-                  </div>
-                  <input type="radio" name="payment" value={value} checked={active}
-                    onChange={() => setPaymentMethod(value)} className="sr-only" />
-                  <div className="flex-1">
-                    <span className="flex items-center gap-2 text-sm font-medium" style={{ color: "#F9F6F0" }}>
-                      <Icon className="w-4 h-4 text-primary" />{label}
-                    </span>
-                    <p className="text-[11px] mt-1" style={{ color: "rgba(249,246,240,0.4)" }}>{sub}</p>
-                  </div>
-                </label>
-              );
-            })}
+            {/* Card payment info */}
+            <div className="flex items-start gap-3 rounded-xl p-4"
+              style={{ background: "rgba(197,160,89,0.07)", border: "1px solid rgba(197,160,89,0.28)" }}>
+              <CreditCard className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5A059" }} />
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#F9F6F0" }}>
+                  Карта · Apple Pay · Google Pay
+                </p>
+                <p className="text-[11px] mt-1 leading-relaxed" style={{ color: "rgba(249,246,240,0.45)" }}>
+                  Сигурно плащане чрез Stripe. Ще бъдете пренасочени към защитена страница.
+                </p>
+              </div>
+            </div>
+            {/* Trust badges */}
+            <div className="flex items-center justify-center gap-4 pt-1">
+              <span className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(249,246,240,0.28)" }}>
+                <Lock className="w-3 h-3" /> SSL 256-bit
+              </span>
+              <span className="text-[10px]" style={{ color: "rgba(197,160,89,0.2)" }}>·</span>
+              <span className="text-[10px]" style={{ color: "rgba(249,246,240,0.28)" }}>Powered by Stripe</span>
+              <span className="text-[10px]" style={{ color: "rgba(197,160,89,0.2)" }}>·</span>
+              <span className="text-[10px]" style={{ color: "rgba(249,246,240,0.28)" }}>3D Secure</span>
+            </div>
           </div>
         </Step>
 
@@ -610,7 +606,7 @@ export function CheckoutContent() {
           style={{ background: "linear-gradient(135deg, #C5A059 0%, #A8853E 100%)", color: "#1A1A1A", boxShadow: "0 4px 20px rgba(197,160,89,0.3)" }}>
           {loading
             ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />Обработка...</span>
-            : paymentMethod === "card" ? "Продължи към плащане →" : "Потвърди поръчката →"}
+            : "Продължи към плащане →"}
         </button>
       </div>
     </div>

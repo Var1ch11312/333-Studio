@@ -9,6 +9,7 @@
 
 import { createServerClient } from "@/lib/supabase-server";
 import { haversineKm } from "@/lib/geo";
+import { deliveryFeeForZone } from "@/lib/constants";
 import {
   sendWhatsAppText,
   sendWhatsAppButtons,
@@ -22,7 +23,6 @@ import {
   courierAcceptId,
 } from "@/lib/whatsapp";
 
-const COURIER_FEE_EUR = 5;
 const FLORIST_SLA_MINUTES = 5;
 const COURIER_RADIUS_KM = 1.5;
 
@@ -267,6 +267,9 @@ export async function dispatchToCouriers(
   const distanceKm = haversineKm(hubLat, hubLng, deliveryLat, deliveryLng);
   const etaMinutes = Math.round(15 + distanceKm * 4); // 15 min prep + 4 min/km
 
+  // Courier fee depends on the delivery zone (Center/North 5 EUR, Meden Rudnik 8 EUR)
+  const courierFeeEur = deliveryFeeForZone(deliveryLat, deliveryLng, haversineKm);
+
   // Find available couriers — prefer couriers at this hub with GPS,
   // fallback to all active couriers at hub
   const { data: couriers } = await supabase
@@ -306,7 +309,7 @@ export async function dispatchToCouriers(
     hub.address,
     order.delivery_address,
     distanceKm,
-    COURIER_FEE_EUR
+    courierFeeEur
   );
 
   await Promise.all(

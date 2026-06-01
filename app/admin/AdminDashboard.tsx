@@ -5,10 +5,20 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, RefreshCw, Users, ShoppingBag, Calendar } from "lucide-react";
+import { Loader2, RefreshCw, Users, ShoppingBag, Calendar, FileText } from "lucide-react";
 import type { Order, Courier, OrderStatus } from "@/types";
 
-type Tab = "orders" | "couriers" | "namedays";
+type Tab = "orders" | "couriers" | "namedays" | "reports";
+
+type AgentReport = {
+  id: string;
+  agent_type: "accountant" | "lawyer" | "marketing";
+  period_start: string;
+  period_end: string;
+  summary: string;
+  full_report: Record<string, unknown>;
+  created_at: string;
+};
 
 function TabButton({
   active,
@@ -345,6 +355,112 @@ function NameDaysTab() {
   );
 }
 
+/* ─── AI Reports tab ─────────────────────────────────── */
+const AGENT_LABELS: Record<AgentReport["agent_type"], { label: string; color: string }> = {
+  accountant: { label: "Бухгалтер", color: "#6B9E6E" },
+  lawyer:     { label: "Юрист",     color: "#5B8DB8" },
+  marketing:  { label: "Маркетолог", color: "#C5A059" },
+};
+
+function ReportsTab() {
+  const [reports, setReports] = useState<AgentReport[]>([]);
+  const [filter, setFilter] = useState<AgentReport["agent_type"] | "all">("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const url = filter === "all" ? "/api/admin/reports" : `/api/admin/reports?type=${filter}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!res.ok) setError(data.error ?? "Грешка при зареждане");
+    else setReports(data.reports ?? []);
+    setLoading(false);
+  }, [filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filters: (AgentReport["agent_type"] | "all")[] = ["all", "accountant", "lawyer", "marketing"];
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {filters.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+              filter === f
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-foreground"
+            }`}
+          >
+            {f === "all" ? "Всички" : AGENT_LABELS[f].label}
+          </button>
+        ))}
+        <button onClick={load} className="ml-auto text-muted-foreground hover:text-foreground">
+          <RefreshCw className="w-4 h-4" />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      ) : error ? (
+        <p className="text-center text-destructive-foreground py-8 text-sm">{error}</p>
+      ) : !reports.length ? (
+        <p className="text-center text-muted-foreground py-8 text-sm">
+          Все още няма отчети. Агентите се стартират по график (1-ви/15-и и понеделник).
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {reports.map((r) => {
+            const agent = AGENT_LABELS[r.agent_type];
+            const open = expanded === r.id;
+            return (
+              <Card key={r.id}>
+                <CardContent className="pt-4 pb-4 flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-sm"
+                      style={{ color: agent.color, background: `${agent.color}15`, border: `1px solid ${agent.color}40` }}
+                    >
+                      {agent.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {r.period_start} → {r.period_end}
+                    </span>
+                    <span className="ml-auto text-[10px] text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString("bg-BG", {
+                        day: "2-digit", month: "2-digit", year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed whitespace-pre-line">{r.summary}</p>
+                  <button
+                    onClick={() => setExpanded(open ? null : r.id)}
+                    className="text-xs text-primary hover:underline w-fit"
+                  >
+                    {open ? "Скрий пълния отчет" : "Покажи пълния отчет"}
+                  </button>
+                  {open && (
+                    <pre className="text-[11px] bg-secondary/40 rounded-lg p-3 overflow-x-auto text-muted-foreground">
+                      {JSON.stringify(r.full_report, null, 2)}
+                    </pre>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main dashboard ─────────────────────────────────── */
 export function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("orders");
@@ -353,6 +469,7 @@ export function AdminDashboard() {
     { key: "orders", label: "Поръчки", icon: ShoppingBag },
     { key: "couriers", label: "Куриери", icon: Users },
     { key: "namedays", label: "Именни дни", icon: Calendar },
+    { key: "reports", label: "AI Отчети", icon: FileText },
   ];
 
   return (
@@ -371,6 +488,7 @@ export function AdminDashboard() {
       {tab === "orders"   && <OrdersTab />}
       {tab === "couriers" && <CouriersTab />}
       {tab === "namedays" && <NameDaysTab />}
+      {tab === "reports"  && <ReportsTab />}
     </div>
   );
 }

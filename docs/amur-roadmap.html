@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMUR.BG — Roadmap to Launch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#F1EEE7; --panel:#FFFFFF; --panel2:#E9E4DA;
+    --ink:#17150F; --sub:rgba(23,21,15,0.64); --faint:rgba(23,21,15,0.42);
+    --line:rgba(23,21,15,0.16); --coral:#DD4517; --coralDim:rgba(221,69,23,0.10);
+    --green:#1F8A5B; --blue:#2A6FDB;
+    --WORD:'Oswald',sans-serif; --HEAD:'Manrope',system-ui,sans-serif;
+    --BODY:'Manrope',system-ui,sans-serif; --MONO:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--void);color:var(--ink);font-family:var(--BODY);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(20px,5vw,52px) 100px;}
+
+  .brand{display:flex;align-items:baseline;gap:7px;margin-bottom:38px;}
+  .brand b{font-family:var(--WORD);font-weight:700;letter-spacing:0.07em;font-size:22px;}
+  .brand span{font-family:var(--WORD);font-weight:600;letter-spacing:0.07em;font-size:22px;color:var(--sub);}
+  .brand i{width:6px;height:6px;background:var(--coral);border-radius:50%;transform:translateY(-2px);display:inline-block;}
+  .tag{font-family:var(--MONO);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--coral);margin-bottom:14px;}
+  h1{font-family:var(--HEAD);font-weight:800;font-size:clamp(34px,6vw,60px);letter-spacing:-0.02em;line-height:1.02;margin:0 0 18px;}
+  .lede{font-size:clamp(15px,1.7vw,18px);color:var(--sub);max-width:660px;margin:0 0 10px;}
+
+  .prog{display:flex;gap:6px;margin:30px 0 6px;}
+  .prog div{height:8px;flex:1;background:var(--panel2);}
+  .prog div.on{background:var(--coral);}
+  .prog-l{font-family:var(--MONO);font-size:11px;color:var(--faint);letter-spacing:0.08em;}
+
+  section{margin-top:54px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+  .sec-num{font-family:var(--MONO);font-size:12px;color:var(--coral);letter-spacing:0.12em;border:1px solid var(--line);padding:5px 9px;}
+  h2{font-family:var(--HEAD);font-weight:800;font-size:clamp(23px,3.4vw,32px);letter-spacing:-0.01em;margin:0;}
+  .sec-sub{color:var(--sub);font-size:14.5px;margin:6px 0 22px;max-width:680px;}
+
+  .task{display:grid;grid-template-columns:26px 1fr auto;gap:14px;align-items:start;padding:15px 0;border-top:1px solid var(--line);}
+  .task:first-of-type{border-top:none;}
+  .box{width:20px;height:20px;border:1.6px solid var(--line);margin-top:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .box.done{background:var(--green);border-color:var(--green);color:#fff;}
+  .box.todo{border-color:var(--coral);}
+  .t-body .n{font-family:var(--HEAD);font-weight:700;font-size:15.5px;}
+  .t-body .d{font-size:13.5px;color:var(--sub);margin-top:3px;}
+  .t-body code{font-family:var(--MONO);font-size:12px;background:var(--coralDim);color:var(--coral);padding:1px 6px;border-radius:3px;}
+  .pill{font-family:var(--MONO);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--line);color:var(--faint);white-space:nowrap;height:fit-content;margin-top:2px;}
+  .pill.must{color:var(--coral);border-color:var(--coral);}
+  .pill.back{color:var(--blue);border-color:rgba(42,111,219,0.4);}
+  .pill.done{color:var(--green);border-color:rgba(31,138,91,0.4);}
+
+  .flow{background:var(--panel);border:1px solid var(--line);padding:clamp(18px,3vw,30px);margin-top:6px;}
+  .step{display:grid;grid-template-columns:42px 1fr;gap:16px;position:relative;padding-bottom:24px;}
+  .step:last-child{padding-bottom:0;}
+  .step:not(:last-child):before{content:"";position:absolute;left:20px;top:42px;bottom:-2px;width:2px;background:var(--line);}
+  .step .num{width:42px;height:42px;border-radius:50%;background:var(--ink);color:var(--void);font-family:var(--HEAD);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:1;}
+  .step.pay .num{background:var(--coral);}
+  .step.ok .num{background:var(--green);}
+  .step.no .num{background:#B23B2E;}
+  .step .sn{font-family:var(--HEAD);font-weight:800;font-size:17px;margin-bottom:4px;}
+  .step .sd{font-size:14px;color:var(--sub);}
+  .branch{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;}
+  .branch .b{flex:1;min-width:220px;border:1px solid var(--line);padding:13px 15px;background:var(--void);}
+  .branch .b .bh{font-family:var(--MONO);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+  .branch .b.good .bh{color:var(--green);}
+  .branch .b.bad .bh{color:#B23B2E;}
+  .branch .b .bd{font-size:13px;color:var(--sub);}
+
+  .note{background:var(--coralDim);border-left:3px solid var(--coral);padding:14px 18px;margin-top:16px;font-size:13.5px;color:var(--ink);}
+  .note b{font-weight:700;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:6px;}
+  .grid2 .cell{background:var(--panel);padding:18px 20px;}
+  .grid2 .cell h4{font-family:var(--HEAD);font-weight:800;font-size:15px;margin:0 0 10px;}
+  .grid2 .cell ul{margin:0;padding-left:18px;}
+  .grid2 .cell li{font-size:13.5px;color:var(--sub);margin-bottom:7px;}
+
+  @media(max-width:680px){
+    .grid2{grid-template-columns:1fr;}
+    .task{grid-template-columns:26px 1fr;}
+    .pill{grid-column:2;justify-self:start;margin-top:8px;}
+  }
+
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--MONO);font-size:11px;color:var(--faint);letter-spacing:0.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  @media print{body{background:#fff;}.wrap{padding:0;}section{break-inside:avoid;}.flow,.task,.grid2{break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand"><b>AMUR</b><span>.BG</span><i></i></div>
+  <div class="tag">ROADMAP · ОТ РАЗРАБОТКИ К ПЕРВОМУ ЗАКАЗУ</div>
+  <h1>Что осталось сделать,<br>чтобы запустить продажи</h1>
+  <p class="lede">Платформа готова на 95% — каталог, корзина, Stripe, WhatsApp-диспетч, RAG-агенты. Остались деплой на боевой домен, CRUD каталога и тесты. Ниже — полная карта.</p>
+
+  <div class="prog">
+    <div class="on"></div><div class="on"></div><div class="on"></div><div class="on"></div>
+    <div class="on"></div><div class="on"></div><div class="on"></div><div class="on"></div>
+    <div></div><div></div>
+  </div>
+  <div class="prog-l">Готовность: разработка 95% ✅ · деплой, тесты, контент — впереди</div>
+
+
+  <!-- ─── A: DONE ─────────────────────────────────────── -->
+  <section>
+    <div class="sec-head"><span class="sec-num">A</span><h2>Уже готово</h2></div>
+    <p class="sec-sub">Полноценная платформа — можно показывать партнёрам и первым клиентам уже сейчас.</p>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Cinematic Landing Page — Midnight Luxe</div>
+        <div class="d">GSAP-анимации (hero stagger, ScrollTrigger, sticky stacking), 7 секций, floating pill-navbar, noise overlay. Шрифты Inter + Playfair Display + JetBrains Mono.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Каталог + фильтры + карточка продукта</div>
+        <div class="d">Категорийные чипы, DualPrice EUR/BGN по курсу 1.95583, страница <code>/product/[id]</code> с аккордеоном, qty stepper, trust badges.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Корзина (multi-product CartContext)</div>
+        <div class="d">localStorage-персистентность, добавить/удалить/изменить qty, суммирование, badge в navbar + BottomNav. Страница <code>/cart</code>.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Checkout (5 шагов) + Stripe Webhook</div>
+        <div class="d">Имя, адрес, время доставки, Stripe Checkout, идемпотентный webhook-обработчик. Создание заказа в Supabase после <code>payment_intent.succeeded</code>.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">PIN-аутентификация Admin + Hub</div>
+        <div class="d">httpOnly cookie <code>amur_session</code>, middleware защита <code>/admin/*</code> и <code>/hub/*</code>. Без OAuth — намеренно, для простоты флористов.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">WhatsApp Cloud API — диспетч флористам и курьерам</div>
+        <div class="d">8 типов сообщений, кнопки <code>hub_accept_</code>/<code>hub_reject_</code>/<code>courier_accept_</code>. Webhook-обработчик, broadcast курьерам, first-wins atomic.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Алгоритм маршрутизации Hub (Haversine)</div>
+        <div class="d">Зоны: Центр 5 EUR / Север 5 EUR / Меден Рудник 8 EUR. Авто-эскалация при таймауте 5 мин. Если все Hub отказали — алерт admin.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Admin Dashboard — заказы, курьеры, именины, AI отчёты</div>
+        <div class="d">4 вкладки. Реалтайм статусы, управление курьерами, именинный календарь, просмотр отчётов RAG-агентов с JSON-expand.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Hub Dashboard — реалтайм Supabase</div>
+        <div class="d">Supabase Realtime подписка, принять/отклонить заказ, статусы: собираем → везём → доставлено.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Загрузка фото доставки</div>
+        <div class="d">Курьер загружает фото через <code>POST /api/orders/[id]/photo</code>. Supabase Storage bucket <code>delivery-proofs</code>, signed URL 1 год, лимит 8 MB, JPEG/PNG/WebP.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Cron jobs × 5</div>
+        <div class="d"><code>dispatch-timeout</code> каждые 2 мин, <code>nameday-reminders</code> ежедневно в 09:00, <code>agent-accountant</code> / <code>agent-lawyer</code> 1-го и 15-го, <code>agent-marketing</code> каждый понедельник.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">RAG-агенты × 3 — Бухгалтер, Юрист, Маркетолог</div>
+        <div class="d">Claude claude-opus-4-8 + adaptive thinking + manual tool-use loop. pgvector knowledge base (14 документов). Отчёты сохраняются в <code>agent_reports</code>, алерт admin в WhatsApp.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">PWA — установка на телефон</div>
+        <div class="d">manifest.webmanifest, offline page, install banner, theme-color #C5A059. Работает на iOS Safari и Android Chrome.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+  </section>
+
+
+  <!-- ─── B: ORDER FLOW ──────────────────────────────── -->
+  <section>
+    <div class="sec-head"><span class="sec-num">B</span><h2>Как работает заказ — полный флоу</h2></div>
+    <p class="sec-sub">От клика по букету до фото-подтверждения доставки. Всё автоматизировано через WhatsApp + Supabase Realtime.</p>
+
+    <div class="flow">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <div class="sn">Клиент выбирает букет → Корзина</div>
+          <div class="sd">Каталог с фильтрами, карточка продукта, qty stepper. Multi-product корзина с localStorage. Проверка нечётного числа стеблей (болгарская традиция).</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <div class="sn">Checkout — имя, адрес, время доставки</div>
+          <div class="sd">5-шаговая форма. Адрес → определение зоны (Haversine) → автоматический расчёт цены доставки: Центр/Север 5 EUR, Меден Рудник 8 EUR.</div>
+        </div>
+      </div>
+
+      <div class="step pay">
+        <div class="num">3</div>
+        <div>
+          <div class="sn">Stripe Checkout — оплата картой</div>
+          <div class="sd">Деньги списываются сразу (не hold). PCI на стороне Stripe. После <code>payment_intent.succeeded</code> — webhook создаёт заказ в Supabase и запускает <code>routeOrderToHub()</code>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <div class="sn">WhatsApp флористу ближайшего Hub</div>
+          <div class="sd">Алгоритм находит ближайший Hub по Haversine. WhatsApp кнопки «Принять» / «Отклонить». Таймаут 5 мин — автоэскалация к следующему Hub.</div>
+          <div class="branch">
+            <div class="b bad">
+              <div class="bh">Все Hub отказали</div>
+              <div class="bd">Admin получает WhatsApp-алерт. Заказ переходит в ручную обработку со статусом <code>escalated</code>.</div>
+            </div>
+            <div class="b good">
+              <div class="bh">Hub принял</div>
+              <div class="bd">Запускается <code>dispatchToCouriers()</code> — broadcast всем доступным курьерам зоны.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">5</div>
+        <div>
+          <div class="sn">Dispatch курьеров — first-wins</div>
+          <div class="sd">WhatsApp broadcast курьерам зоны. Первый нажавший «Принять» атомарно закрепляет заказ за собой (Supabase atomic update). Остальные получают «уже занято».</div>
+        </div>
+      </div>
+
+      <div class="step ok">
+        <div class="num">6</div>
+        <div>
+          <div class="sn">Доставка + фото-подтверждение</div>
+          <div class="sd">Курьер обновляет статусы: собираем букет → везём → доставлено. При доставке загружает фото через Hub Dashboard. Клиент получает signed URL фото в WhatsApp. SLA: весь цикл ≤ 2 часов.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note"><b>Болгарское правило:</b> букеты содержат нечётное число стеблей. Чётное — только для погребений. <code>isOddFlowerCount(n)</code> проверяется на уровне API при создании заказа. Менять нельзя — это жёсткое бизнес-правило.</div>
+  </section>
+
+
+  <!-- ─── C: TODO ─────────────────────────────────────── -->
+  <section>
+    <div class="sec-head"><span class="sec-num">C</span><h2>Что ещё нужно сделать</h2></div>
+    <p class="sec-sub">Платформа запустится без этих задач, но они нужны для полноценной работы:</p>
+
+    <div class="task">
+      <span class="box todo"></span>
+      <div class="t-body">
+        <div class="n">Admin CRUD каталога — добавить/редактировать продукты</div>
+        <div class="d">Форма в Admin Dashboard: название, описание, цена EUR, кол-во стеблей, тег, загрузка фото в Supabase Storage. Без этого Admin заполняет каталог вручную через Supabase Studio.</div>
+      </div>
+      <span class="pill must">Приоритет 1</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo"></span>
+      <div class="t-body">
+        <div class="n">Embeddings backfill — knowledge_documents</div>
+        <div class="d">14 документов в базе без векторов. Нужно прогнать через <code>embed(content)</code> (OpenAI text-embedding-3-small) и записать в поле <code>embedding vector(1536)</code>. Без этого RAG-агенты не находят релевантные документы.</div>
+      </div>
+      <span class="pill must">Приоритет 2</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo"></span>
+      <div class="t-body">
+        <div class="n">Unit тесты — Vitest</div>
+        <div class="d">Минимум: <code>isOddFlowerCount</code>, dual pricing BGN/EUR, Haversine distance, <code>resolveDeliveryZone</code>. Без тестов каждый рефактор — риск регрессии.</div>
+      </div>
+      <span class="pill back">Тесты</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo"></span>
+      <div class="t-body">
+        <div class="n">E2E тест — полный флоу заказа</div>
+        <div class="d">Playwright: выбор букета → корзина → checkout → Stripe test mode → webhook → статусы в Hub. Критично перед запуском на боевые ключи Stripe.</div>
+      </div>
+      <span class="pill back">Тесты</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo"></span>
+      <div class="t-body">
+        <div class="n">GitHub Actions CI</div>
+        <div class="d"><code>tsc --noEmit</code> + <code>next build</code> на каждый PR. Сейчас проверка только вручную.</div>
+      </div>
+      <span class="pill back">DevOps</span>
+    </div>
+  </section>
+
+
+  <!-- ─── D: DEPLOY ──────────────────────────────────── -->
+  <section>
+    <div class="sec-head"><span class="sec-num">D</span><h2>Деплой — чтобы amur.bg заработал</h2></div>
+
+    <div class="grid2">
+      <div class="cell">
+        <h4>Vercel (фронтенд + API routes)</h4>
+        <ul>
+          <li>Репозиторий уже подключён к Vercel</li>
+          <li>Добавить все <b>ENV переменные</b> в Vercel Dashboard (Supabase URL/keys, Stripe keys, WhatsApp token, Anthropic key, OpenAI key, CRON_SECRET, ADMIN_TOKEN, HUB_TOKEN)</li>
+          <li>Домен <code>amur.bg</code> → DNS A-запись на Vercel + HTTPS автоматически</li>
+          <li>Vercel Cron Jobs: убедиться что <code>vercel.json</code> содержит все 5 cron расписаний</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <h4>Внешние сервисы</h4>
+        <ul>
+          <li><b>Supabase:</b> создать отдельный production-проект (не dev). Применить все 9 миграций.</li>
+          <li><b>Stripe:</b> переключить <code>STRIPE_SECRET_KEY</code> с <code>sk_test_</code> на <code>sk_live_</code>. Зарегистрировать webhook на <code>amur.bg/api/webhooks/stripe</code>.</li>
+          <li><b>Meta / WhatsApp Business:</b> верифицировать Business Account, подать 8 шаблонов на одобрение (обычно 24–48 ч). Зарегистрировать webhook на <code>amur.bg/api/webhooks/whatsapp</code>.</li>
+          <li><b>Google Business Profile:</b> зарегистрировать AMUR.BG в Бургасе для локального SEO.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note"><b>Юридическое (обязательно для Stripe в ЕС / Болгарии):</b> на сайте должны быть Условия использования, Политика конфиденциальности, Политика возвратов и согласие на GDPR в форме checkout. Stripe может заблокировать выплаты без этих страниц.</div>
+  </section>
+
+
+  <!-- ─── E: ORDER OF LAUNCH ─────────────────────────── -->
+  <section>
+    <div class="sec-head"><span class="sec-num">E</span><h2>Порядок запуска — step by step</h2></div>
+
+    <div class="task">
+      <span class="box todo">1</span>
+      <div class="t-body">
+        <div class="n">Vercel ENV vars + DNS → amur.bg работает</div>
+        <div class="d">Заполнить все переменные окружения в Vercel. Привязать домен. Проверить что <code>/api/health</code> возвращает 200 и Supabase соединение живо.</div>
+      </div>
+      <span class="pill must">День 1</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo">2</span>
+      <div class="t-body">
+        <div class="n">Подать WhatsApp шаблоны на одобрение Meta</div>
+        <div class="d">8 шаблонов: уведомление флористу, подтверждение флориста, broadcast курьерам, подтверждение курьера, статус клиенту, фото-подтверждение, именинное напоминание, алерт admin. Одобрение: 24–48 ч.</div>
+      </div>
+      <span class="pill must">День 1–2</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo">3</span>
+      <div class="t-body">
+        <div class="n">Stripe: переключить на live ключи + протестировать</div>
+        <div class="d">Заменить test ключи на live. Сделать реальный тестовый заказ на 1 EUR. Убедиться что webhook получает <code>payment_intent.succeeded</code> и заказ создаётся в Supabase.</div>
+      </div>
+      <span class="pill must">День 2–3</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo">4</span>
+      <div class="t-body">
+        <div class="n">Admin CRUD: заполнить каталог реальными фото</div>
+        <div class="d">Добавить 6–10 реальных букетов с фотографиями. Нечётное число стеблей. Реальные цены. Без этого каталог показывает fallback данные.</div>
+      </div>
+      <span class="pill must">День 3–4</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo">5</span>
+      <div class="t-body">
+        <div class="n">Embeddings backfill + E2E тест полного флоу</div>
+        <div class="d">Прогнать 14 документов knowledge base через OpenAI embeddings. Запустить E2E тест: заказ → оплата → флорист → курьер → фото. Убедиться SLA ≤ 2ч.</div>
+      </div>
+      <span class="pill back">День 4–5</span>
+    </div>
+
+    <div class="task">
+      <span class="box todo">6</span>
+      <div class="t-body">
+        <div class="n">Go-live — первые 10 заказов</div>
+        <div class="d">Онбординг 2–3 флористов (Hub) и 3–5 курьеров. Рассылка по именинникам. Мониторинг: Vercel logs + Supabase dashboard + WhatsApp алерты. CAC цель < 15 EUR.</div>
+      </div>
+      <span class="pill back">День 5–7</span>
+    </div>
+  </section>
+
+
+  <footer>
+    <span>AMUR.BG · БУРГАС, БЪЛГАРИЯ</span>
+    <span>ROADMAP · v1.0 · ЮНИ 2026</span>
+  </footer>
+
+</div>
+</body>
+</html>

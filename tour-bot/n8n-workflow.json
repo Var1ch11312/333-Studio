@@ -1,0 +1,344 @@
+{
+  "name": "Экскурсии — Telegram бот",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 300],
+      "webhookId": "tour-bot-webhook",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_TELEGRAM_CRED_ID",
+          "name": "Telegram - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Разбор входящего сообщения, роль и контроль доступа\nconst body = $input.first().json;\nconst msg = body.message || body.edited_message || {};\nconst from = msg.from || {};\nconst chatId = (msg.chat && msg.chat.id) || from.id;\nconst text = msg.text || msg.caption || '';\n\n// === НАСТРОЙКА ДОСТУПА ===\nconst ADMINS = [488686339];        // владелец / админ\nconst MANAGERS = [];               // сюда добавляйте Telegram ID менеджеров\n\nconst allowed = [...ADMINS, ...MANAGERS];\nconst authorized = allowed.length === 0 ? true : allowed.includes(from.id);\nconst role = ADMINS.includes(from.id) ? 'admin' : 'manager';\nconst managerName = [from.first_name, from.last_name].filter(Boolean).join(' ') || String(from.id);\n\nreturn [{ json: { chatId, text, userId: from.id, managerName, role, authorized } }];"
+      },
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": "Prepare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-auth",
+              "leftValue": "={{ $json.authorized }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Authorized?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Prepare').item.json.text }}",
+        "options": {
+          "systemMessage": "=Ты — внутренний ассистент-бот для менеджеров по продаже экскурсий (регион Бургас, Болгария). Ты помогаешь СОТРУДНИКУ (не клиенту) быстро находить информацию и оформлять продажу. Отвечай по-русски, кратко и по делу. Не выдумывай данные — бери только из таблиц через инструменты.\n\nТекущий пользователь: роль = {{ $('Prepare').item.json.role }}, имя/id = {{ $('Prepare').item.json.managerName }}. Если роль = admin — доступны админ-действия (добавление отелей).\n\nИНСТРУМЕНТЫ:\n- Excursions — все экскурсии из каталога. Вызывай, когда сотрудник называет экскурсию (даже с опечатками/в транслите: «джип сафари», «jeep safari», «жыпсафари») — сам найди наиболее подходящую строку по смыслу. Если подходят несколько — перечисли и уточни.\n- Hotels — все отели с остановками. Вызывай, когда сотрудник называет отель — найди остановку и ссылку Google Maps.\n- Add_Hotel — добавить отель (ТОЛЬКО если роль = admin). Поля: hotel, stop, maps_url, time, note.\n- Log_Order — записать оформленную продажу в таблицу заказов.\n\nЛОГИКА ДИАЛОГА:\n1) Название экскурсии → вызови Excursions, найди совпадение, верни карточку: 🏷 Название · 💶 Взрослый X / Детский Y · 📅 Дни · 🕐 Время · 🏢 Компания + краткое описание.\n2) Название отеля → вызови Hotels, найди остановку. Верни: 🚏 Остановка + ссылку Google Maps + время сбора (если есть). Если отеля нет — скажи; если admin, предложи: «добавь отель <название> остановка <…> ссылка <…>».\n3) Сообщение «продай»/«оформить» → выдай список наводящих вопросов: 1. Имя 2. Телефон 3. Отель 4. Взрослых 5. Детей 6. Дата экскурсии 7. Оплата (нал/карта) 8. Комментарий.\n4) Заполненные данные клиента → возьми экскурсию из контекста диалога (если не ясна — спроси); вызови Hotels по отелю (остановка+ссылка); посчитай сумму = Взрослых×Цена_взрослый + Детей×Цена_детский; вызови Log_Order; верни РОВНО два блока в тройных кавычках для копирования.\n   Блок 1 «📩 СООБЩЕНИЕ КЛИЕНТУ»: приветствие, экскурсия, дата, время сбора, остановка, ссылка Google Maps, кол-во взр/дет, сумма, что взять с собой.\n   Блок 2 «🧾 ЧЕК / УЧЁТ»: клиент+телефон, отель→остановка, экскурсия+дата, взр/дет с ценами, ИТОГО, оплата, менеджер.\n5) Админ-команды (admin): «добавь отель …» → Add_Hotel + подтверждение; «список экскурсий» → Excursions + короткий список.\n\nПРАВИЛА: не придумывай цены/остановки/ссылки — только из таблиц; не хватает данных — спроси; валюту не конвертируй; будь лаконичен."
+        }
+      },
+      "id": "44444444-4444-4444-4444-444444444444",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "55555555-5555-5555-5555-555555555555",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [560, 460],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_OPENAI_CRED_ID",
+          "name": "OpenAI - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Prepare').item.json.chatId }}",
+        "contextWindowLength": 20
+      },
+      "id": "66666666-6666-6666-6666-666666666666",
+      "name": "Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [700, 460]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Вернуть все экскурсии из каталога (название, цены, дни, время, компания, описание). Используй для поиска экскурсии по тексту менеджера.",
+        "documentId": {
+          "__rl": true,
+          "value": "1s3UBKo6xThoq2_bXhU6LCMeNWUM8dJgkrrBgJU17chA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Экскурсии"
+        },
+        "options": {}
+      },
+      "id": "77777777-7777-7777-7777-777777777777",
+      "name": "Excursions",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [840, 460],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GSHEETS_CRED_ID",
+          "name": "Google Sheets - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Вернуть все отели с привязанными остановками и ссылками Google Maps. Используй, чтобы найти остановку по названию отеля.",
+        "documentId": {
+          "__rl": true,
+          "value": "1s3UBKo6xThoq2_bXhU6LCMeNWUM8dJgkrrBgJU17chA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Отели",
+          "mode": "list",
+          "cachedResultName": "Отели"
+        },
+        "options": {}
+      },
+      "id": "88888888-8888-8888-8888-888888888888",
+      "name": "Hotels",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [980, 460],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GSHEETS_CRED_ID",
+          "name": "Google Sheets - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Добавить новый отель в таблицу отелей (только для админа). Параметры: hotel, stop, maps_url, time, note.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s3UBKo6xThoq2_bXhU6LCMeNWUM8dJgkrrBgJU17chA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Отели",
+          "mode": "list",
+          "cachedResultName": "Отели"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Отель": "={{ $fromAI('hotel', 'Название отеля') }}",
+            "Остановка": "={{ $fromAI('stop', 'Название остановки') }}",
+            "Google Maps": "={{ $fromAI('maps_url', 'Ссылка Google Maps') }}",
+            "Время сбора": "={{ $fromAI('time', 'Время сбора') }}",
+            "Заметка": "={{ $fromAI('note', 'Комментарий') }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "99999999-9999-9999-9999-999999999999",
+      "name": "Add_Hotel",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [1120, 460],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GSHEETS_CRED_ID",
+          "name": "Google Sheets - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Записать оформленный заказ в таблицу заказов. Вызывай при оформлении продажи.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s3UBKo6xThoq2_bXhU6LCMeNWUM8dJgkrrBgJU17chA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Заказы",
+          "mode": "list",
+          "cachedResultName": "Заказы"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Дата создания": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+            "Менеджер": "={{ $('Prepare').item.json.managerName }}",
+            "Клиент": "={{ $fromAI('client', 'Имя клиента') }}",
+            "Телефон": "={{ $fromAI('phone', 'Телефон клиента') }}",
+            "Отель": "={{ $fromAI('hotel', 'Отель') }}",
+            "Экскурсия": "={{ $fromAI('excursion', 'Название экскурсии') }}",
+            "Взрослых": "={{ $fromAI('adults', 'Кол-во взрослых') }}",
+            "Детей": "={{ $fromAI('children', 'Кол-во детей') }}",
+            "Сумма": "={{ $fromAI('total', 'Итоговая сумма') }}",
+            "Дата экскурсии": "={{ $fromAI('date', 'Дата экскурсии') }}",
+            "Остановка": "={{ $fromAI('stop', 'Остановка') }}",
+            "Оплата": "={{ $fromAI('payment', 'Способ оплаты') }}",
+            "Комментарий": "={{ $fromAI('note', 'Комментарий') }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": "Log_Order",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [1260, 460],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GSHEETS_CRED_ID",
+          "name": "Google Sheets - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare').item.json.chatId }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "name": "Send Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1000, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_TELEGRAM_CRED_ID",
+          "name": "Telegram - Tour bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare').item.json.chatId }}",
+        "text": "⛔ Доступа нет. Обратитесь к администратору.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Deny",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [700, 420],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_TELEGRAM_CRED_ID",
+          "name": "Telegram - Tour bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [[{ "node": "Prepare", "type": "main", "index": 0 }]]
+    },
+    "Prepare": {
+      "main": [[{ "node": "Authorized?", "type": "main", "index": 0 }]]
+    },
+    "Authorized?": {
+      "main": [
+        [{ "node": "AI Agent", "type": "main", "index": 0 }],
+        [{ "node": "Deny", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Agent": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "OpenAI Model": {
+      "ai_languageModel": [[{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "Memory": {
+      "ai_memory": [[{ "node": "AI Agent", "type": "ai_memory", "index": 0 }]]
+    },
+    "Excursions": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    },
+    "Hotels": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    },
+    "Add_Hotel": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    },
+    "Log_Order": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -529,6 +529,14 @@ export function CheckoutContent() {
               <span className="text-[10px]" style={{ color: "rgba(197,160,89,0.2)" }}>·</span>
               <span className="text-[10px]" style={{ color: "rgba(249,246,240,0.28)" }}>3D Secure</span>
             </div>
+            {/* GDPR / legal consent */}
+            <p className="text-[10px] text-center leading-relaxed" style={{ color: "rgba(249,246,240,0.3)" }}>
+              Натискайки „Продължи към плащане", приемате{" "}
+              <a href="/terms" target="_blank" style={{ color: "rgba(197,160,89,0.6)", textDecoration: "underline" }}>Условията за ползване</a>,{" "}
+              <a href="/refund" target="_blank" style={{ color: "rgba(197,160,89,0.6)", textDecoration: "underline" }}>Политиката за връщане</a>{" "}
+              и обработката на лични данни съгласно{" "}
+              <a href="/privacy" target="_blank" style={{ color: "rgba(197,160,89,0.6)", textDecoration: "underline" }}>Политиката за поверителност</a> (GDPR).
+            </p>
           </div>
         </Step>
 

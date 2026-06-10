@@ -544,10 +544,10 @@ function CTASection() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function FooterSection() {
   const COLS = [
-    { title: "Магазин",   links: ["Каталог", "B2B", "Именни дни", "Абонамент"] },
-    { title: "Компания",  links: ["За нас", "Флористи", "Курьери", "Контакти"] },
-    { title: "Правно",    links: ["Поверителност", "Условия", "Cookies", "GDPR"] },
-  ];
+    { title: "Магазин",   links: [["Каталог", "#catalog"], ["B2B", "#b2b"], ["Именни дни", "#catalog"], ["Абонамент", "#b2b"]] },
+    { title: "Компания",  links: [["За нас", "#protocol"], ["Флористи", "#protocol"], ["Курьери", "#protocol"], ["Контакти", "mailto:support@amur.bg"]] },
+    { title: "Правно",    links: [["Поверителност", "/privacy"], ["Условия", "/terms"], ["Връщане", "/refund"], ["GDPR", "/privacy"]] },
+  ] as const;
 
   return (
     <footer style={{ background: "#050508", borderRadius: "4rem 4rem 0 0", padding: "64px clamp(20px,5vw,60px) 40px", marginTop: -32, fontFamily: C.sans }}>
@@ -561,11 +561,11 @@ function FooterSection() {
             <div key={col.title}>
               <p style={{ fontFamily: C.mono, fontSize: 9, letterSpacing: "0.22em", color: C.accent, textTransform: "uppercase", marginBottom: 20 }}>{col.title}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {col.links.map(link => (
-                  <a key={link} href="#" style={{ fontSize: 13, color: C.textMuted, textDecoration: "none", transition: "color 0.2s" }}
+                {col.links.map(([label, href]) => (
+                  <a key={label} href={href} style={{ fontSize: 13, color: C.textMuted, textDecoration: "none", transition: "color 0.2s" }}
                     onMouseEnter={e => { (e.target as HTMLElement).style.color = "rgba(250,248,245,0.75)"; }}
                     onMouseLeave={e => { (e.target as HTMLElement).style.color = C.textMuted; }}>
-                    {link}
+                    {label}
                   </a>
                 ))}
               </div>

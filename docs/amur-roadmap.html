@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AMUR.BG — Roadmap to Launch</title>
+<title>Kiss My Flowers — Roadmap to Launch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -92,17 +92,17 @@
 <body>
 <div class="wrap">
 
-  <div class="brand"><b>AMUR</b><span>.BG</span><i></i></div>
+  <div class="brand"><b>KISS</b><span>MY FLOWERS</span><i></i></div>
   <div class="tag">ROADMAP · ОТ РАЗРАБОТКИ К ПЕРВОМУ ЗАКАЗУ</div>
   <h1>Что осталось сделать,<br>чтобы запустить продажи</h1>
-  <p class="lede">Платформа готова на 95% — каталог, корзина, Stripe, WhatsApp-диспетч, RAG-агенты. Остались деплой на боевой домен, CRUD каталога и тесты. Ниже — полная карта.</p>
+  <p class="lede">Платформа готова на 98% — каталог, корзина, Stripe, WhatsApp-диспетч, RAG-агенты, Admin CRUD, тесты и CI. Остался деплой на боевой домен и E2E тест. Ниже — полная карта.</p>
 
   <div class="prog">
     <div class="on"></div><div class="on"></div><div class="on"></div><div class="on"></div>
     <div class="on"></div><div class="on"></div><div class="on"></div><div class="on"></div>
-    <div></div><div></div>
+    <div class="on"></div><div></div>
   </div>
-  <div class="prog-l">Готовность: разработка 95% ✅ · деплой, тесты, контент — впереди</div>
+  <div class="prog-l">Готовность: разработка 98% ✅ · деплой и E2E тест — впереди</div>
 
 
   <!-- ─── A: DONE ─────────────────────────────────────── -->
@@ -150,7 +150,7 @@
       <span class="box done">✓</span>
       <div class="t-body">
         <div class="n">PIN-аутентификация Admin + Hub</div>
-        <div class="d">httpOnly cookie <code>amur_session</code>, middleware защита <code>/admin/*</code> и <code>/hub/*</code>. Без OAuth — намеренно, для простоты флористов.</div>
+        <div class="d">httpOnly cookie <code>kmf_session</code>, middleware защита <code>/admin/*</code> и <code>/hub/*</code>. Rate-limiter 5 попыток/15 мин + <code>crypto.timingSafeEqual</code>. Без OAuth — намеренно.</div>
       </div>
       <span class="pill done">Done</span>
     </div>
@@ -176,8 +176,17 @@
     <div class="task">
       <span class="box done">✓</span>
       <div class="t-body">
-        <div class="n">Admin Dashboard — заказы, курьеры, именины, AI отчёты</div>
-        <div class="d">4 вкладки. Реалтайм статусы, управление курьерами, именинный календарь, просмотр отчётов RAG-агентов с JSON-expand.</div>
+        <div class="n">Admin Dashboard — заказы, курьеры, именины, AI отчёты, каталог</div>
+        <div class="d">5 вкладок. Реалтайм статусы, управление курьерами, именинный календарь, просмотр отчётов RAG-агентов с JSON-expand, CRUD каталога с фото.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Admin CRUD каталога + загрузка фото товаров</div>
+        <div class="d">Вкладка «Каталог» в Admin Dashboard. Добавить/редактировать/деактивировать продукт. Загрузка фото в Supabase Storage bucket <code>product-images</code>. Валидация нечётного числа стеблей на уровне API (<code>GET/POST /api/admin/products</code>, <code>PATCH/DELETE /api/admin/products/[id]</code>, <code>POST /api/admin/products/[id]/image</code>).</div>
       </div>
       <span class="pill done">Done</span>
     </div>
@@ -223,6 +232,33 @@
       <div class="t-body">
         <div class="n">PWA — установка на телефон</div>
         <div class="d">manifest.webmanifest, offline page, install banner, theme-color #C5A059. Работает на iOS Safari и Android Chrome.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Unit тесты — Vitest × 16</div>
+        <div class="d">Покрытие: <code>isOddFlowerCount</code>, dual pricing EUR/BGN (1.95583), DUAL_PRICE_DEADLINE, <code>formatDualPrice</code>, <code>haversineKm</code> (нулевое расстояние, Меден Рудник ~5.5 км, симметрия), <code>resolveDeliveryZone</code>, <code>deliveryFeeForZone</code>. 16/16 проходят.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">GitHub Actions CI</div>
+        <div class="d"><code>tsc --noEmit</code> + <code>npx vitest run</code> + <code>next build</code> на каждый push и PR. Запускается автоматически при изменениях в <code>main</code>.</div>
+      </div>
+      <span class="pill done">Done</span>
+    </div>
+
+    <div class="task">
+      <span class="box done">✓</span>
+      <div class="t-body">
+        <div class="n">Юридические страницы + GDPR</div>
+        <div class="d">Страницы <code>/terms</code>, <code>/privacy</code>, <code>/refund</code> на болгарском. GDPR-согласие в форме checkout. <code>robots.ts</code> и <code>sitemap.ts</code> (динамические URL продуктов). <code>/api/health</code> для uptime-мониторинга.</div>
       </div>
       <span class="pill done">Done</span>
     </div>
@@ -301,13 +337,13 @@
   <!-- ─── C: TODO ─────────────────────────────────────── -->
   <section>
     <div class="sec-head"><span class="sec-num">C</span><h2>Что ещё нужно сделать</h2></div>
-    <p class="sec-sub">Платформа запустится без этих задач, но они нужны для полноценной работы:</p>
+    <p class="sec-sub">Только две задачи остались до полной боевой готовности:</p>
 
     <div class="task">
       <span class="box todo"></span>
       <div class="t-body">
-        <div class="n">Admin CRUD каталога — добавить/редактировать продукты</div>
-        <div class="d">Форма в Admin Dashboard: название, описание, цена EUR, кол-во стеблей, тег, загрузка фото в Supabase Storage. Без этого Admin заполняет каталог вручную через Supabase Studio.</div>
+        <div class="n">Embeddings backfill — knowledge_documents</div>
+        <div class="d">14 документов в базе без векторов. Нужно прогнать через <code>embed(content)</code> (OpenAI text-embedding-3-small) и записать в поле <code>embedding vector(1536)</code>. Скрипт готов: <code>npx tsx scripts/backfill-embeddings.ts</code>. Без этого RAG-агенты не находят релевантные документы.</div>
       </div>
       <span class="pill must">Приоритет 1</span>
     </div>
@@ -315,44 +351,17 @@
     <div class="task">
       <span class="box todo"></span>
       <div class="t-body">
-        <div class="n">Embeddings backfill — knowledge_documents</div>
-        <div class="d">14 документов в базе без векторов. Нужно прогнать через <code>embed(content)</code> (OpenAI text-embedding-3-small) и записать в поле <code>embedding vector(1536)</code>. Без этого RAG-агенты не находят релевантные документы.</div>
-      </div>
-      <span class="pill must">Приоритет 2</span>
-    </div>
-
-    <div class="task">
-      <span class="box todo"></span>
-      <div class="t-body">
-        <div class="n">Unit тесты — Vitest</div>
-        <div class="d">Минимум: <code>isOddFlowerCount</code>, dual pricing BGN/EUR, Haversine distance, <code>resolveDeliveryZone</code>. Без тестов каждый рефактор — риск регрессии.</div>
-      </div>
-      <span class="pill back">Тесты</span>
-    </div>
-
-    <div class="task">
-      <span class="box todo"></span>
-      <div class="t-body">
         <div class="n">E2E тест — полный флоу заказа</div>
-        <div class="d">Playwright: выбор букета → корзина → checkout → Stripe test mode → webhook → статусы в Hub. Критично перед запуском на боевые ключи Stripe.</div>
+        <div class="d">Playwright: выбор букета → корзина → checkout → Stripe test mode → webhook → статусы в Hub. Критично перед переключением на боевые ключи Stripe.</div>
       </div>
       <span class="pill back">Тесты</span>
-    </div>
-
-    <div class="task">
-      <span class="box todo"></span>
-      <div class="t-body">
-        <div class="n">GitHub Actions CI</div>
-        <div class="d"><code>tsc --noEmit</code> + <code>next build</code> на каждый PR. Сейчас проверка только вручную.</div>
-      </div>
-      <span class="pill back">DevOps</span>
     </div>
   </section>
 
 
   <!-- ─── D: DEPLOY ──────────────────────────────────── -->
   <section>
-    <div class="sec-head"><span class="sec-num">D</span><h2>Деплой — чтобы amur.bg заработал</h2></div>
+    <div class="sec-head"><span class="sec-num">D</span><h2>Деплой — чтобы kissmyflowers.bg заработал</h2></div>
 
     <div class="grid2">
       <div class="cell">
@@ -360,22 +369,23 @@
         <ul>
           <li>Репозиторий уже подключён к Vercel</li>
           <li>Добавить все <b>ENV переменные</b> в Vercel Dashboard (Supabase URL/keys, Stripe keys, WhatsApp token, Anthropic key, OpenAI key, CRON_SECRET, ADMIN_TOKEN, HUB_TOKEN)</li>
-          <li>Домен <code>amur.bg</code> → DNS A-запись на Vercel + HTTPS автоматически</li>
+          <li>Домен <code>kissmyflowers.bg</code> → DNS A-запись на Vercel + HTTPS автоматически</li>
           <li>Vercel Cron Jobs: убедиться что <code>vercel.json</code> содержит все 5 cron расписаний</li>
+          <li>Создать Supabase Storage bucket <code>product-images</code> (Public) для фото каталога</li>
         </ul>
       </div>
       <div class="cell">
         <h4>Внешние сервисы</h4>
         <ul>
           <li><b>Supabase:</b> создать отдельный production-проект (не dev). Применить все 9 миграций.</li>
-          <li><b>Stripe:</b> переключить <code>STRIPE_SECRET_KEY</code> с <code>sk_test_</code> на <code>sk_live_</code>. Зарегистрировать webhook на <code>amur.bg/api/webhooks/stripe</code>.</li>
-          <li><b>Meta / WhatsApp Business:</b> верифицировать Business Account, подать 8 шаблонов на одобрение (обычно 24–48 ч). Зарегистрировать webhook на <code>amur.bg/api/webhooks/whatsapp</code>.</li>
-          <li><b>Google Business Profile:</b> зарегистрировать AMUR.BG в Бургасе для локального SEO.</li>
+          <li><b>Stripe:</b> переключить <code>STRIPE_SECRET_KEY</code> с <code>sk_test_</code> на <code>sk_live_</code>. Зарегистрировать webhook на <code>kissmyflowers.bg/api/webhooks/stripe</code>.</li>
+          <li><b>Meta / WhatsApp Business:</b> верифицировать Business Account, подать 8 шаблонов на одобрение (обычно 24–48 ч). Зарегистрировать webhook на <code>kissmyflowers.bg/api/webhooks/whatsapp</code>.</li>
+          <li><b>Google Business Profile:</b> зарегистрировать Kiss My Flowers в Бургасе для локального SEO.</li>
         </ul>
       </div>
     </div>
 
-    <div class="note"><b>Юридическое (обязательно для Stripe в ЕС / Болгарии):</b> на сайте должны быть Условия использования, Политика конфиденциальности, Политика возвратов и согласие на GDPR в форме checkout. Stripe может заблокировать выплаты без этих страниц.</div>
+    <div class="note"><b>Юридическое (обязательно для Stripe в ЕС / Болгарии):</b> страницы Условия использования, Политика конфиденциальности, Политика возвратов и GDPR-согласие в форме checkout — <b>уже готовы</b> ✓. Stripe не заблокирует выплаты.</div>
   </section>
 
 
@@ -386,7 +396,7 @@
     <div class="task">
       <span class="box todo">1</span>
       <div class="t-body">
-        <div class="n">Vercel ENV vars + DNS → amur.bg работает</div>
+        <div class="n">Vercel ENV vars + DNS → kissmyflowers.bg работает</div>
         <div class="d">Заполнить все переменные окружения в Vercel. Привязать домен. Проверить что <code>/api/health</code> возвращает 200 и Supabase соединение живо.</div>
       </div>
       <span class="pill must">День 1</span>
@@ -413,8 +423,8 @@
     <div class="task">
       <span class="box todo">4</span>
       <div class="t-body">
-        <div class="n">Admin CRUD: заполнить каталог реальными фото</div>
-        <div class="d">Добавить 6–10 реальных букетов с фотографиями. Нечётное число стеблей. Реальные цены. Без этого каталог показывает fallback данные.</div>
+        <div class="n">Embeddings backfill + заполнить каталог реальными фото</div>
+        <div class="d">Прогнать 14 документов knowledge base: <code>npx tsx scripts/backfill-embeddings.ts</code>. Через вкладку «Каталог» в Admin Dashboard добавить 6–10 реальных букетов с фотографиями (нечётное число стеблей, реальные цены).</div>
       </div>
       <span class="pill must">День 3–4</span>
     </div>
@@ -422,8 +432,8 @@
     <div class="task">
       <span class="box todo">5</span>
       <div class="t-body">
-        <div class="n">Embeddings backfill + E2E тест полного флоу</div>
-        <div class="d">Прогнать 14 документов knowledge base через OpenAI embeddings. Запустить E2E тест: заказ → оплата → флорист → курьер → фото. Убедиться SLA ≤ 2ч.</div>
+        <div class="n">E2E тест полного флоу</div>
+        <div class="d">Playwright: заказ → оплата → флорист → курьер → фото-подтверждение. Убедиться SLA ≤ 2ч. Проверить эскалацию (таймаут 5 мин) и broadcast курьерам.</div>
       </div>
       <span class="pill back">День 4–5</span>
     </div>
@@ -432,7 +442,7 @@
       <span class="box todo">6</span>
       <div class="t-body">
         <div class="n">Go-live — первые 10 заказов</div>
-        <div class="d">Онбординг 2–3 флористов (Hub) и 3–5 курьеров. Рассылка по именинникам. Мониторинг: Vercel logs + Supabase dashboard + WhatsApp алерты. CAC цель < 15 EUR.</div>
+        <div class="d">Онбординг 2–3 флористов (Hub) и 3–5 курьеров. Рассылка по именинникам. Мониторинг: Vercel logs + Supabase dashboard + WhatsApp алерты. CAC цель &lt; 15 EUR.</div>
       </div>
       <span class="pill back">День 5–7</span>
     </div>
@@ -440,8 +450,8 @@
 
 
   <footer>
-    <span>AMUR.BG · БУРГАС, БЪЛГАРИЯ</span>
-    <span>ROADMAP · v1.0 · ЮНИ 2026</span>
+    <span>KISS MY FLOWERS · БУРГАС, БЪЛГАРИЯ</span>
+    <span>ROADMAP · v2.0 · ЮНИ 2026</span>
   </footer>
 
 </div>

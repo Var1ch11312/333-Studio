@@ -19,6 +19,7 @@ export type Product = {
   hub_id: string | null;
   active: boolean;
   flower_count: number;
+  tag: string | null;
   created_at: string;
   updated_at: string;
 };

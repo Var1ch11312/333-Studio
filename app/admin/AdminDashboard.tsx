@@ -5,10 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, RefreshCw, Users, ShoppingBag, Calendar, FileText } from "lucide-react";
-import type { Order, Courier, OrderStatus } from "@/types";
+import { Loader2, RefreshCw, Users, ShoppingBag, Calendar, FileText, Package } from "lucide-react";
+import type { Order, Courier, OrderStatus, Product } from "@/types";
 
-type Tab = "orders" | "couriers" | "namedays" | "reports";
+type Tab = "orders" | "couriers" | "namedays" | "reports" | "catalog";
 
 type AgentReport = {
   id: string;
@@ -461,15 +461,345 @@ function ReportsTab() {
   );
 }
 
+/* ─── Catalog tab ────────────────────────────────────── */
+type ProductForm = {
+  title: string;
+  description: string;
+  price_eur: string;
+  flower_count: string;
+  tag: string;
+};
+
+const EMPTY_FORM: ProductForm = {
+  title: "",
+  description: "",
+  price_eur: "",
+  flower_count: "",
+  tag: "",
+};
+
+function CatalogTab() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState<{ open: boolean; editId: string | null }>({
+    open: false,
+    editId: null,
+  });
+  const [form, setForm] = useState<ProductForm>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch("/api/admin/products");
+    const data = await res.json();
+    setProducts(data.products ?? []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => {
+    setForm(EMPTY_FORM);
+    setFormError(null);
+    setModal({ open: false, editId: null });
+    // small delay so state settles before opening
+    setTimeout(() => setModal({ open: true, editId: null }), 0);
+  };
+
+  const openEdit = (p: Product) => {
+    setForm({
+      title: p.title,
+      description: p.description ?? "",
+      price_eur: String(p.price_eur),
+      flower_count: String(p.flower_count),
+      tag: p.tag ?? "",
+    });
+    setFormError(null);
+    setModal({ open: true, editId: p.id });
+  };
+
+  const closeModal = () => setModal({ open: false, editId: null });
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setFormError(null);
+
+    const payload = {
+      title: form.title,
+      description: form.description,
+      price_eur: parseFloat(form.price_eur),
+      flower_count: parseInt(form.flower_count, 10),
+      tag: form.tag,
+    };
+
+    const url = modal.editId
+      ? `/api/admin/products/${modal.editId}`
+      : "/api/admin/products";
+    const method = modal.editId ? "PATCH" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setFormError(data.error ?? "Грешка при запис");
+    } else {
+      closeModal();
+      load();
+    }
+    setSaving(false);
+  };
+
+  const handleToggleActive = async (id: string, active: boolean) => {
+    await fetch(`/api/admin/products/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !active }),
+    });
+    load();
+  };
+
+  const handleImageUpload = async (id: string, file: File) => {
+    setUploadingFor(id);
+    const fd = new FormData();
+    fd.append("file", file);
+    await fetch(`/api/admin/products/${id}/image`, { method: "POST", body: fd });
+    load();
+    setUploadingFor(null);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {products.length} продукта
+        </p>
+        <Button size="sm" onClick={openAdd}>
+          + Добави продукт
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left">
+                {["Снимка", "Заглавие", "EUR", "Цветя", "Таг", "Статус", ""].map((h) => (
+                  <th
+                    key={h}
+                    className="pb-3 pr-4 text-xs text-muted-foreground font-medium"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((p) => (
+                <tr
+                  key={p.id}
+                  className={`border-b border-border/50 hover:bg-secondary/30 transition-colors${
+                    !p.active ? " opacity-50" : ""
+                  }`}
+                >
+                  {/* Photo cell — click to upload */}
+                  <td className="py-3 pr-4">
+                    <label className="cursor-pointer group relative block w-10 h-10">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) handleImageUpload(p.id, f);
+                          e.target.value = "";
+                        }}
+                      />
+                      {p.image_url ? (
+                        <img
+                          src={p.image_url}
+                          alt={p.title}
+                          className="w-10 h-10 rounded object-cover group-hover:opacity-60 transition-opacity"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded bg-secondary flex items-center justify-center text-muted-foreground group-hover:bg-secondary/60 transition-colors">
+                          {uploadingFor === p.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <span className="text-[10px]">＋</span>
+                          )}
+                        </div>
+                      )}
+                    </label>
+                  </td>
+
+                  <td className="py-3 pr-4 font-medium max-w-[180px] truncate">
+                    {p.title}
+                  </td>
+                  <td className="py-3 pr-4 text-primary font-semibold">
+                    {Number(p.price_eur).toFixed(2)}
+                  </td>
+                  <td className="py-3 pr-4 text-muted-foreground">{p.flower_count}</td>
+                  <td className="py-3 pr-4">
+                    {p.tag && (
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded-sm border"
+                        style={{ borderColor: "rgba(197,160,89,0.4)", color: "rgba(197,160,89,0.85)" }}
+                      >
+                        {p.tag}
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-3 pr-4">
+                    <button
+                      onClick={() => handleToggleActive(p.id, p.active)}
+                      className={`text-[10px] px-2 py-0.5 rounded-sm border transition-colors ${
+                        p.active
+                          ? "border-green-600/40 text-green-400 hover:border-red-500/40 hover:text-red-400"
+                          : "border-red-500/40 text-red-400 hover:border-green-600/40 hover:text-green-400"
+                      }`}
+                    >
+                      {p.active ? "Активен" : "Неактивен"}
+                    </button>
+                  </td>
+                  <td className="py-3">
+                    <button
+                      onClick={() => openEdit(p)}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Редактирай
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!products.length && (
+            <p className="text-center text-muted-foreground py-8 text-sm">
+              Каталогът е празен
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Add / Edit modal */}
+      {modal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeModal}
+          />
+          <div className="relative bg-background border border-border rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 flex flex-col gap-4">
+            <h2 className="text-sm font-semibold">
+              {modal.editId ? "Редактиране на продукт" : "Нов продукт"}
+            </h2>
+
+            <form onSubmit={handleSave} className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground">Заглавие *</label>
+                <Input
+                  required
+                  value={form.title}
+                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  placeholder="Розова Елегантност"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground">Описание</label>
+                <Input
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, description: e.target.value }))
+                  }
+                  placeholder="25 бели и розови рози, лилии..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground">Цена (EUR) *</label>
+                  <Input
+                    required
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    value={form.price_eur}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, price_eur: e.target.value }))
+                    }
+                    placeholder="45.00"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground">Брой цветя *</label>
+                  <Input
+                    required
+                    type="number"
+                    min="1"
+                    value={form.flower_count}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, flower_count: e.target.value }))
+                    }
+                    placeholder="25"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground">
+                  Таг (незадължителен)
+                </label>
+                <Input
+                  value={form.tag}
+                  onChange={(e) => setForm((f) => ({ ...f, tag: e.target.value }))}
+                  placeholder="Бестселър / Премиум / B2B..."
+                />
+              </div>
+
+              {formError && (
+                <p className="text-xs text-red-400">{formError}</p>
+              )}
+
+              <div className="flex gap-2 pt-1">
+                <Button type="submit" size="sm" disabled={saving}>
+                  {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {modal.editId ? "Запази" : "Добави"}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={closeModal}
+                >
+                  Отказ
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main dashboard ─────────────────────────────────── */
 export function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("orders");
 
   const TABS: { key: Tab; label: string; icon: typeof ShoppingBag }[] = [
-    { key: "orders", label: "Поръчки", icon: ShoppingBag },
-    { key: "couriers", label: "Куриери", icon: Users },
-    { key: "namedays", label: "Именни дни", icon: Calendar },
-    { key: "reports", label: "AI Отчети", icon: FileText },
+    { key: "orders",   label: "Поръчки",     icon: ShoppingBag },
+    { key: "couriers", label: "Куриери",     icon: Users },
+    { key: "namedays", label: "Именни дни",  icon: Calendar },
+    { key: "reports",  label: "AI Отчети",   icon: FileText },
+    { key: "catalog",  label: "Каталог",     icon: Package },
   ];
 
   return (
@@ -489,6 +819,7 @@ export function AdminDashboard() {
       {tab === "couriers" && <CouriersTab />}
       {tab === "namedays" && <NameDaysTab />}
       {tab === "reports"  && <ReportsTab />}
+      {tab === "catalog"  && <CatalogTab />}
     </div>
   );
 }

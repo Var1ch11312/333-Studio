@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiss My Flowers — Доставка на цветя в Бургас</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --obsidian: #0D0D12;
+  --obsidian2: #13131A;
+  --obsidian3: #1A1A24;
+  --champagne: #C9A84C;
+  --champagne-dim: rgba(201,168,76,0.15);
+  --champagne-faint: rgba(201,168,76,0.06);
+  --ivory: #FAF8F5;
+  --ivory-dim: rgba(250,248,245,0.6);
+  --ivory-faint: rgba(250,248,245,0.35);
+  --line: rgba(250,248,245,0.08);
+  --line2: rgba(201,168,76,0.2);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--obsidian);
+  color: var(--ivory);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Noise overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .045;
+}
+
+/* ── Header ── */
+header {
+  position: relative;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  padding: 0 clamp(20px, 5vw, 80px);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ivory);
+  line-height: 1;
+}
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--champagne);
+}
+.nav-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.sla-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  border: 1px solid var(--line2);
+  padding: 6px 12px;
+  background: var(--champagne-faint);
+}
+.nav-phone {
+  font-size: 13px;
+  color: var(--ivory-dim);
+  text-decoration: none;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  z-index: 5;
+  padding: clamp(64px, 10vw, 120px) clamp(20px, 5vw, 80px) clamp(48px, 7vw, 80px);
+  text-align: center;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(42px, 8vw, 88px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: var(--ivory);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--champagne);
+}
+.hero-sub {
+  font-size: clamp(14px, 1.6vw, 17px);
+  color: var(--ivory-dim);
+  max-width: 520px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+.hero-pills {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.hero-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  border: 1px solid var(--line);
+  padding: 7px 14px;
+}
+
+/* ── Divider ── */
+.divider {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 clamp(20px, 5vw, 80px);
+  margin-bottom: 48px;
+}
+.divider-line { flex: 1; height: 1px; background: var(--line); }
+.divider-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  white-space: nowrap;
+}
+
+/* ── Grid ── */
+.catalog {
+  position: relative;
+  z-index: 5;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 80px) 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+/* ── Card ── */
+.card {
+  background: var(--obsidian2);
+  display: flex;
+  flex-direction: column;
+  transition: background 0.25s;
+  cursor: pointer;
+}
+.card:hover { background: var(--obsidian3); }
+
+.card-img {
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-img-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+/* Flower "photo" via CSS gradient + abstract shape */
+.card-img svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.card-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--obsidian2) 0%, transparent 50%);
+}
+
+/* Tags */
+.card-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 1px solid var(--line2);
+  background: rgba(13,13,18,0.8);
+  backdrop-filter: blur(8px);
+  color: var(--champagne);
+}
+.card-stems {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ivory-faint);
+  background: rgba(13,13,18,0.7);
+  backdrop-filter: blur(8px);
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+}
+
+/* Card body */
+.card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.card-name {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--ivory);
+  line-height: 1.2;
+}
+.card-desc {
+  font-size: 12.5px;
+  color: var(--ivory-faint);
+  line-height: 1.6;
+  flex: 1;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.card-price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.price-eur {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--champagne);
+  line-height: 1;
+}
+.price-bgn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ivory-faint);
+}
+.card-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--obsidian);
+  background: var(--champagne);
+  border: none;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.card-btn:hover { opacity: 0.85; }
+
+/* ── Footer ── */
+footer {
+  position: relative;
+  z-index: 5;
+  border-top: 1px solid var(--line);
+  padding: 32px clamp(20px, 5vw, 80px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-brand {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ivory-faint);
+}
+.footer-meta {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.footer-meta a {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ivory-faint);
+  text-decoration: none;
+}
+.footer-meta a:hover { color: var(--champagne); }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .catalog { grid-template-columns: 1fr; }
+  .nav-meta { gap: 12px; }
+  .sla-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-name">Kiss My Flowers</div>
+      <div class="brand-sub">Бургас · Доставка 2 часа</div>
+    </div>
+    <div class="nav-meta">
+      <div class="sla-badge">⏱ Доставка ≤ 2 часа</div>
+      <a href="tel:+35988123456" class="nav-phone">+359 88 123 456</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Премиум доставка на цветя · Бургас</div>
+  <h1>Цветята говорят<br>когато думите <em>мълчат</em></h1>
+  <p class="hero-sub">Ръчно аранжирани букети от местни флористи. Доставяме в рамките на 2 часа в Бургас — Център, Север и Меден Рудник.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Нечетен брой стъбла</span>
+    <span class="hero-pill">EUR + BGN цени</span>
+    <span class="hero-pill">WhatsApp потвърждение</span>
+    <span class="hero-pill">Снимка при доставка</span>
+  </div>
+</div>
+
+<!-- Divider -->
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-label">Нашият каталог — 8 букета</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- Catalog Grid -->
+<div class="catalog">
+
+  <!-- 1. Розова Мечта -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g1" cx="50%" cy="60%" r="65%">
+              <stop offset="0%" stop-color="#E8A0BF"/>
+              <stop offset="45%" stop-color="#C26B9A"/>
+              <stop offset="100%" stop-color="#1A0D14"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#1A0D14"/>
+          <ellipse cx="200" cy="165" rx="130" ry="110" fill="url(#g1)" opacity=".85"/>
+          <circle cx="200" cy="120" r="38" fill="#E8A0BF" opacity=".4"/>
+          <circle cx="165" cy="140" r="28" fill="#F2B5D4" opacity=".35"/>
+          <circle cx="235" cy="135" r="32" fill="#D4739A" opacity=".4"/>
+          <circle cx="200" cy="100" r="22" fill="#FAD4E8" opacity=".5"/>
+          <!-- stems -->
+          <rect x="195" y="190" width="4" height="55" rx="2" fill="#2D4A2D" opacity=".6"/>
+          <rect x="185" y="195" width="3" height="50" rx="2" fill="#2D4A2D" opacity=".5" transform="rotate(-8,185,195)"/>
+          <rect x="215" y="193" width="3" height="48" rx="2" fill="#2D4A2D" opacity=".5" transform="rotate(10,215,193)"/>
+          <!-- leaf -->
+          <ellipse cx="178" cy="215" rx="14" ry="7" fill="#3D6B3D" opacity=".5" transform="rotate(-30,178,215)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-stems">11 стъбла</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Розова Мечта</div>
+      <div class="card-desc">11 розово-бели рози с деликатен аромат, гипсофила и зеленина. Класически букет за всеки повод.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">32 EUR</div>
+          <div class="price-bgn">≈ 62.59 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Слънчева Радост -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g2" cx="50%" cy="55%" r="60%">
+              <stop offset="0%" stop-color="#F5C842"/>
+              <stop offset="40%" stop-color="#E8A020"/>
+              <stop offset="100%" stop-color="#1A1200"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#1A1200"/>
+          <ellipse cx="200" cy="155" rx="140" ry="115" fill="url(#g2)" opacity=".8"/>
+          <!-- sunflower centers -->
+          <circle cx="200" cy="115" r="18" fill="#5C3A00" opacity=".9"/>
+          <circle cx="158" cy="140" r="14" fill="#5C3A00" opacity=".8"/>
+          <circle cx="242" cy="135" r="15" fill="#5C3A00" opacity=".8"/>
+          <circle cx="200" cy="90" r="11" fill="#5C3A00" opacity=".7"/>
+          <!-- petals highlight -->
+          <circle cx="200" cy="85" r="28" fill="#F5C842" opacity=".3"/>
+          <circle cx="200" cy="115" r="8" fill="#F0D070" opacity=".6"/>
+          <!-- stems -->
+          <rect x="196" y="195" width="5" height="50" rx="2" fill="#3D6B1A" opacity=".7"/>
+          <rect x="184" y="198" width="4" height="45" rx="2" fill="#3D6B1A" opacity=".6" transform="rotate(-10,184,198)"/>
+          <rect x="212" y="196" width="4" height="47" rx="2" fill="#3D6B1A" opacity=".6" transform="rotate(12,212,196)"/>
+          <ellipse cx="175" cy="220" rx="16" ry="8" fill="#4A7A20" opacity=".55" transform="rotate(-25,175,220)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">Сезонен</div>
+      <div class="card-stems">9 стъбла</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Слънчева Радост</div>
+      <div class="card-desc">9 слънчогледа — символ на топлина и вярност. Сезонни допълнения по избор на флориста.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">37 EUR</div>
+          <div class="price-bgn">≈ 72.37 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Нежна Прегръдка -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g3" cx="50%" cy="58%" r="62%">
+              <stop offset="0%" stop-color="#F5B8C8"/>
+              <stop offset="35%" stop-color="#D4789A"/>
+              <stop offset="70%" stop-color="#8B3A5A"/>
+              <stop offset="100%" stop-color="#1A0D12"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#1A0D12"/>
+          <ellipse cx="200" cy="158" rx="145" ry="118" fill="url(#g3)" opacity=".85"/>
+          <!-- peonies -->
+          <circle cx="200" cy="110" r="42" fill="#F0A8C0" opacity=".45"/>
+          <circle cx="200" cy="110" r="28" fill="#F5C0D0" opacity=".55"/>
+          <circle cx="165" cy="135" r="30" fill="#E890B0" opacity=".4"/>
+          <circle cx="238" cy="128" r="34" fill="#DC80A8" opacity=".4"/>
+          <circle cx="200" cy="88" r="20" fill="#FFD4E4" opacity=".5"/>
+          <circle cx="200" cy="110" r="12" fill="#FF9AB8" opacity=".4"/>
+          <!-- stems -->
+          <rect x="196" y="192" width="5" height="52" rx="2" fill="#2D4A2D" opacity=".6"/>
+          <rect x="182" y="196" width="4" height="48" rx="2" fill="#2D4A2D" opacity=".5" transform="rotate(-9,182,196)"/>
+          <rect x="216" y="194" width="4" height="49" rx="2" fill="#2D4A2D" opacity=".5" transform="rotate(11,216,194)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">Бестселър</div>
+      <div class="card-stems">21 стъбло</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Нежна Прегръдка</div>
+      <div class="card-desc">21 розови рози и бели пиони — романтичен букет, подходящ за годишнини и специални поводи.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">59 EUR</div>
+          <div class="price-bgn">≈ 115.39 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Алена Страст -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g4" cx="50%" cy="55%" r="60%">
+              <stop offset="0%" stop-color="#E03030"/>
+              <stop offset="40%" stop-color="#A01818"/>
+              <stop offset="100%" stop-color="#140404"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#140404"/>
+          <ellipse cx="200" cy="158" rx="140" ry="112" fill="url(#g4)" opacity=".9"/>
+          <circle cx="200" cy="112" r="40" fill="#E84040" opacity=".4"/>
+          <circle cx="170" cy="132" r="28" fill="#CC2020" opacity=".45"/>
+          <circle cx="232" cy="126" r="32" fill="#D42828" opacity=".4"/>
+          <circle cx="200" cy="88" r="22" fill="#F05050" opacity=".45"/>
+          <circle cx="200" cy="112" r="14" fill="#FF6060" opacity=".3"/>
+          <!-- ribbon accent -->
+          <ellipse cx="200" cy="200" rx="20" ry="5" fill="#8B0000" opacity=".5"/>
+          <!-- stems -->
+          <rect x="196" y="194" width="5" height="50" rx="2" fill="#1A2D1A" opacity=".7"/>
+          <rect x="183" y="198" width="4" height="46" rx="2" fill="#1A2D1A" opacity=".6" transform="rotate(-8,183,198)"/>
+          <rect x="213" y="196" width="4" height="47" rx="2" fill="#1A2D1A" opacity=".6" transform="rotate(10,213,196)"/>
+          <ellipse cx="224" cy="215" rx="15" ry="7" fill="#243D24" opacity=".55" transform="rotate(20,224,215)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-stems">21 стъбло</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Алена Страст</div>
+      <div class="card-desc">21 червени рози Ecuador с дълги стъбла и интензивен аромат. Декоративна зеленина и бабин лен.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">69 EUR</div>
+          <div class="price-bgn">≈ 134.95 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Бяла Симфония -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g5" cx="50%" cy="52%" r="62%">
+              <stop offset="0%" stop-color="#F8F5F0"/>
+              <stop offset="40%" stop-color="#D8D0C8"/>
+              <stop offset="75%" stop-color="#9A9088"/>
+              <stop offset="100%" stop-color="#141210"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#141210"/>
+          <ellipse cx="200" cy="152" rx="138" ry="114" fill="url(#g5)" opacity=".8"/>
+          <!-- orchid -->
+          <ellipse cx="200" cy="95" rx="25" ry="40" fill="#EEE8FF" opacity=".5" transform="rotate(-15,200,95)"/>
+          <ellipse cx="200" cy="95" rx="10" ry="18" fill="#D4C8FF" opacity=".6"/>
+          <!-- white roses -->
+          <circle cx="175" cy="130" r="32" fill="#F5F0EC" opacity=".5"/>
+          <circle cx="228" cy="122" r="30" fill="#EDE8E4" opacity=".5"/>
+          <circle cx="200" cy="115" r="28" fill="#FFF8F4" opacity=".55"/>
+          <circle cx="200" cy="115" r="14" fill="#FFFAF8" opacity=".4"/>
+          <!-- stems -->
+          <rect x="196" y="190" width="5" height="52" rx="2" fill="#2D3D2D" opacity=".6"/>
+          <rect x="184" y="194" width="4" height="48" rx="2" fill="#2D3D2D" opacity=".5" transform="rotate(-9,184,194)"/>
+          <rect x="212" y="192" width="4" height="50" rx="2" fill="#2D3D2D" opacity=".5" transform="rotate(11,212,192)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">Премиум</div>
+      <div class="card-stems">17 стъбла</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Бяла Симфония</div>
+      <div class="card-desc">17 бели рози с орхидея Dendrobium и еустома. Луксозна опаковка с панделка. Символ на чистота.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">89 EUR</div>
+          <div class="price-bgn">≈ 174.07 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Пролетна Поема -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g6a" cx="40%" cy="55%" r="55%">
+              <stop offset="0%" stop-color="#FF8C9A"/>
+              <stop offset="100%" stop-color="#1A0D12" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="g6b" cx="60%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#9AC8FF"/>
+              <stop offset="100%" stop-color="#0D1218" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="g6c" cx="50%" cy="70%" r="45%">
+              <stop offset="0%" stop-color="#FFE066"/>
+              <stop offset="100%" stop-color="#1A1800" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#0D0D12"/>
+          <ellipse cx="160" cy="140" rx="120" ry="100" fill="url(#g6a)" opacity=".7"/>
+          <ellipse cx="240" cy="130" rx="110" ry="95" fill="url(#g6b)" opacity=".6"/>
+          <ellipse cx="200" cy="175" rx="100" ry="80" fill="url(#g6c)" opacity=".55"/>
+          <!-- tulip shapes -->
+          <ellipse cx="178" cy="105" rx="12" ry="22" fill="#FF6B80" opacity=".7"/>
+          <ellipse cx="200" cy="98" rx="11" ry="20" fill="#FFAABC" opacity=".65"/>
+          <ellipse cx="222" cy="108" rx="12" ry="21" fill="#FF8C9A" opacity=".7"/>
+          <!-- narcissus -->
+          <circle cx="160" cy="145" r="14" fill="#FFF080" opacity=".7"/>
+          <circle cx="240" cy="140" r="13" fill="#FFE840" opacity=".65"/>
+          <!-- hyacinth clusters -->
+          <circle cx="195" cy="155" r="18" fill="#9AB8FF" opacity=".5"/>
+          <!-- stems -->
+          <rect x="196" y="188" width="4" height="54" rx="2" fill="#3D5A2D" opacity=".6"/>
+          <rect x="183" y="192" width="3" height="50" rx="2" fill="#3D5A2D" opacity=".5" transform="rotate(-9,183,192)"/>
+          <rect x="213" y="190" width="3" height="51" rx="2" fill="#3D5A2D" opacity=".5" transform="rotate(11,213,190)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">Сезонен</div>
+      <div class="card-stems">15 стъбла</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Пролетна Поема</div>
+      <div class="card-desc">15 стъбла — лалета, нарциси и зюмбюли. Свежест и аромат на пролетта. Наличен март–май.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">45 EUR</div>
+          <div class="price-bgn">≈ 88.01 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Корпоративен Шик -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g7" cx="50%" cy="50%" r="65%">
+              <stop offset="0%" stop-color="#D4A840"/>
+              <stop offset="35%" stop-color="#B08820"/>
+              <stop offset="65%" stop-color="#6B5010"/>
+              <stop offset="100%" stop-color="#120E00"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#120E00"/>
+          <ellipse cx="200" cy="148" rx="150" ry="125" fill="url(#g7)" opacity=".85"/>
+          <!-- mixed roses pattern -->
+          <circle cx="200" cy="105" r="35" fill="#D4A840" opacity=".4"/>
+          <circle cx="165" cy="128" r="25" fill="#E8C060" opacity=".4"/>
+          <circle cx="238" cy="122" r="28" fill="#C89830" opacity=".4"/>
+          <circle cx="200" cy="85" r="20" fill="#F0C848" opacity=".45"/>
+          <circle cx="155" cy="155" r="22" fill="#B08020" opacity=".35"/>
+          <circle cx="248" cy="148" r="24" fill="#C8A030" opacity=".35"/>
+          <!-- luxury ribbon -->
+          <rect x="160" y="195" width="80" height="4" rx="2" fill="#C9A84C" opacity=".7"/>
+          <!-- stems -->
+          <rect x="196" y="196" width="6" height="46" rx="2" fill="#1A2D1A" opacity=".7"/>
+          <rect x="180" y="200" width="5" height="42" rx="2" fill="#1A2D1A" opacity=".6" transform="rotate(-7,180,200)"/>
+          <rect x="218" y="198" width="5" height="43" rx="2" fill="#1A2D1A" opacity=".6" transform="rotate(9,218,198)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">B2B</div>
+      <div class="card-stems">51 стъбло</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Корпоративен Шик</div>
+      <div class="card-desc">51 смесени рози — монобукет с луксозна опаковка и персонална картичка. За корпоративни подаръци.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">139 EUR</div>
+          <div class="price-bgn">≈ 271.86 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Изненада за Именник -->
+  <div class="card">
+    <div class="card-img">
+      <div class="card-img-inner">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g8" cx="50%" cy="58%" r="60%">
+              <stop offset="0%" stop-color="#B890FF"/>
+              <stop offset="40%" stop-color="#7850CC"/>
+              <stop offset="75%" stop-color="#3D2080"/>
+              <stop offset="100%" stop-color="#0D0814"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="260" fill="#0D0814"/>
+          <ellipse cx="200" cy="158" rx="138" ry="112" fill="url(#g8)" opacity=".85"/>
+          <!-- mystery flowers -->
+          <circle cx="200" cy="110" r="38" fill="#C0A0FF" opacity=".4"/>
+          <circle cx="170" cy="130" r="26" fill="#B080FF" opacity=".4"/>
+          <circle cx="232" cy="125" r="30" fill="#A060EE" opacity=".4"/>
+          <circle cx="200" cy="88" r="20" fill="#D4B8FF" opacity=".45"/>
+          <!-- sparkle dots -->
+          <circle cx="145" cy="95" r="3" fill="#E0D0FF" opacity=".7"/>
+          <circle cx="258" cy="105" r="2.5" fill="#E0D0FF" opacity=".65"/>
+          <circle cx="185" cy="78" r="2" fill="#F0E8FF" opacity=".8"/>
+          <circle cx="220" cy="75" r="2.5" fill="#F0E8FF" opacity=".7"/>
+          <!-- stems -->
+          <rect x="196" y="190" width="5" height="52" rx="2" fill="#2D1A4A" opacity=".7"/>
+          <rect x="184" y="194" width="4" height="48" rx="2" fill="#2D1A4A" opacity=".6" transform="rotate(-9,184,194)"/>
+          <rect x="212" y="192" width="4" height="50" rx="2" fill="#2D1A4A" opacity=".6" transform="rotate(11,212,192)"/>
+        </svg>
+      </div>
+      <div class="card-img-overlay"></div>
+      <div class="card-tag">Именен ден</div>
+      <div class="card-stems">11 стъбла</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Изненада за Именник</div>
+      <div class="card-desc">11 стъбла — персонализиран букет по избор на флориста, съобразен с повода и сезона.</div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="price-eur">39 EUR</div>
+          <div class="price-bgn">≈ 76.28 лв.</div>
+        </div>
+        <a href="#" class="card-btn">Поръчай</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /catalog -->
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">Kiss My Flowers · Бургас</div>
+  <div class="footer-meta">
+    <a href="#">Условия</a>
+    <a href="#">Поверителност</a>
+    <a href="#">Връщане</a>
+    <span style="font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.12em;color:var(--ivory-faint)">
+      Цени в EUR + BGN (1.95583) · SLA 2 ч · 2026
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

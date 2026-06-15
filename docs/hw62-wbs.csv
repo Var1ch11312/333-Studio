@@ -1,0 +1,117 @@
+WBS ID,Назва,Рівень,Батьківський WBS,Тип,Пов'язана US,Story Points,Статус
+1,Kiss My Flowers Platform,1,,Project,,144,In Progress
+1.1,Ініціалізація та інфраструктура,2,1,Phase,,-,✅ Done
+1.1.1,Вибір технічного стеку (Next.js 16 + Supabase + Stripe),3,1.1,Task,-,2,✅ Done
+1.1.2,Налаштування репозиторію та CI/CD (GitHub Actions),3,1.1,Task,-,3,✅ Done
+1.1.3,Проектування схеми БД (8 таблиць + RLS + pgvector),3,1.1,Task,-,5,✅ Done
+1.1.4,Застосування міграцій Supabase (01–10),3,1.1,Task,-,3,✅ Done
+1.1.5,Налаштування змінних середовища (.env.local),3,1.1,Task,-,1,✅ Done
+1.2,Клієнтська частина (Customer),2,1,Phase,,28,✅ Done
+1.2.1,Storefront — головна сторінка з каталогом,3,1.2,Story,US-01,3,✅ Done
+1.2.1.1,Компонент ProductCard (фото + ціна EUR/BGN + тег),4,1.2.1,Sub-task,US-01,1,✅ Done
+1.2.1.2,Фільтрація за тегами (Бестселлер / Сезонний / Преміум),4,1.2.1,Sub-task,US-01,1,✅ Done
+1.2.1.3,Подвійне ціноутворення EUR+BGN до 08.08.2026,4,1.2.1,Sub-task,US-01,1,✅ Done
+1.2.2,AI-підбір букета (2-кроковий wizard),3,1.2,Story,US-02,5,✅ Done
+1.2.2.1,Step 1 — вибір отримувача (6 варіантів),4,1.2.2,Sub-task,US-02,1,✅ Done
+1.2.2.2,Step 2 — вибір приводу (5 варіантів),4,1.2.2,Sub-task,US-02,1,✅ Done
+1.2.2.3,Матриця рекомендацій (30 комбінацій) на JS,4,1.2.2,Sub-task,US-02,2,✅ Done
+1.2.2.4,Результат з поясненням та кнопкою Замовити,4,1.2.2,Sub-task,US-02,1,✅ Done
+1.2.3,Checkout — оформлення замовлення (5 кроків),3,1.2,Story,US-03,8,✅ Done
+1.2.3.1,Крок 1: вибір букета і кількості,4,1.2.3,Sub-task,US-03,1,✅ Done
+1.2.3.2,Крок 2: адреса + зона доставки (Haversine),4,1.2.3,Sub-task,US-03,2,✅ Done
+1.2.3.3,Крок 3: дата і час доставки,4,1.2.3,Sub-task,US-03,1,✅ Done
+1.2.3.4,Крок 4: контактні дані клієнта,4,1.2.3,Sub-task,US-03,1,✅ Done
+1.2.3.5,Крок 5: підсумок + перехід до оплати,4,1.2.3,Sub-task,US-03,2,✅ Done
+1.2.3.6,Валідація: непарна кількість квітів,4,1.2.3,Sub-task,US-03,1,✅ Done
+1.2.4,Оплата через Stripe Checkout,3,1.2,Story,US-04,5,✅ Done
+1.2.4.1,Stripe Checkout Session (server-side),4,1.2.4,Sub-task,US-04,2,✅ Done
+1.2.4.2,Webhook обробник (idempotency),4,1.2.4,Sub-task,US-04,2,✅ Done
+1.2.4.3,Сторінка Success після оплати,4,1.2.4,Sub-task,US-04,1,✅ Done
+1.2.5,Нагадування про іменини,3,1.2,Story,US-11,3,✅ Done
+1.2.5.1,Збереження іменинників клієнта в БД,4,1.2.5,Sub-task,US-11,1,✅ Done
+1.2.5.2,Cron-job nameday-reminders (щоденно о 09:00),4,1.2.5,Sub-task,US-11,2,✅ Done
+1.2.6,PWA — встановлення на смартфон,3,1.2,Story,US-15,3,✅ Done
+1.2.6.1,manifest.json (іконки + назва + кольори),4,1.2.6,Sub-task,US-15,1,✅ Done
+1.2.6.2,Service Worker + кеш каталогу (offline),4,1.2.6,Sub-task,US-15,1,✅ Done
+1.2.6.3,Банер Install App після 2-го відвідування,4,1.2.6,Sub-task,US-15,1,✅ Done
+1.3,WhatsApp нотифікації клієнту,2,1,Phase,US-05,3,✅ Done
+1.3.1,Шаблон: підтвердження замовлення,3,1.3,Task,US-05,1,✅ Done
+1.3.2,Шаблон: кур'єр у дорозі (ім'я + час),3,1.3,Task,US-05,1,✅ Done
+1.3.3,Шаблон: доставлено (з фото),3,1.3,Task,US-05,1,✅ Done
+1.4,Флорист / Hub,2,1,Phase,,13,✅ Done
+1.4.1,WhatsApp: прийняти/відхилити замовлення,3,1.4,Story,US-06,5,✅ Done
+1.4.1.1,Повідомлення з деталями (склад + адреса + час),4,1.4.1,Sub-task,US-06,1,✅ Done
+1.4.1.2,Кнопки hub_accept / hub_reject (button IDs),4,1.4.1,Sub-task,US-06,2,✅ Done
+1.4.1.3,Таймаут 5 хв → автопереключення на наступний хаб,4,1.4.1,Sub-task,US-06,2,✅ Done
+1.4.2,Hub дашборд у реальтаймі,3,1.4,Story,US-12,5,✅ Done
+1.4.2.1,Supabase Realtime підписка на таблицю orders,4,1.4.2,Sub-task,US-12,2,✅ Done
+1.4.2.2,Кольорова пріоритизація статусів,4,1.4.2,Sub-task,US-12,1,✅ Done
+1.4.2.3,PIN-аутентифікація /hub (httpOnly cookie),4,1.4.2,Sub-task,US-12,2,✅ Done
+1.4.3,Алгоритм маршрутизації замовлень (Haversine),3,1.4,Task,US-06,3,✅ Done
+1.5,Кур'єр,2,1,Phase,,13,✅ Done
+1.5.1,WhatsApp: broadcast dispatch кур'єрам,3,1.5,Story,US-07,8,✅ Done
+1.5.1.1,Broadcast усім кур'єрам зони одночасно,4,1.5.1,Sub-task,US-07,2,✅ Done
+1.5.1.2,First-wins atomic запис (race condition захист),4,1.5.1,Sub-task,US-07,3,✅ Done
+1.5.1.3,Кнопки courier_accept (button ID),4,1.5.1,Sub-task,US-07,2,✅ Done
+1.5.1.4,Зворотний зв'язок: Вже зайнято,4,1.5.1,Sub-task,US-07,1,✅ Done
+1.5.2,Фото підтвердження доставки,3,1.5,Story,US-08,5,✅ Done
+1.5.2.1,Webhook: прийом медіа з WhatsApp,4,1.5.2,Sub-task,US-08,2,✅ Done
+1.5.2.2,Збереження фото в Supabase Storage,4,1.5.2,Sub-task,US-08,2,✅ Done
+1.5.2.3,Автозміна статусу на delivered,4,1.5.2,Sub-task,US-08,1,✅ Done
+1.6,Адміністратор,2,1,Phase,,18,✅ Done
+1.6.1,Admin дашборд — перегляд замовлень,3,1.6,Story,US-09,5,✅ Done
+1.6.1.1,Таблиця замовлень з фільтрами (статус / хаб / дата),4,1.6.1,Sub-task,US-09,2,✅ Done
+1.6.1.2,Realtime оновлення без перезавантаження,4,1.6.1,Sub-task,US-09,2,✅ Done
+1.6.1.3,Ручна зміна статусу та переназначення кур'єра,4,1.6.1,Sub-task,US-09,1,✅ Done
+1.6.2,Admin CRUD каталогу,3,1.6,Story,US-10,8,✅ Done
+1.6.2.1,Список продуктів з активним/неактивним тоглом,4,1.6.2,Sub-task,US-10,1,✅ Done
+1.6.2.2,Форма додавання/редагування букета,4,1.6.2,Sub-task,US-10,2,✅ Done
+1.6.2.3,Валідація непарної кількості квітів,4,1.6.2,Sub-task,US-10,1,✅ Done
+1.6.2.4,Завантаження фото (Storage bucket product-images),4,1.6.2,Sub-task,US-10,2,✅ Done
+1.6.2.5,Soft-delete (active=false без видалення з БД),4,1.6.2,Sub-task,US-10,1,✅ Done
+1.6.3,Ескалація прострочених замовлень,3,1.6,Story,US-13,5,✅ Done
+1.6.3.1,Cron dispatch-timeout кожні 2 хвилини,4,1.6.3,Sub-task,US-13,2,✅ Done
+1.6.3.2,WhatsApp сповіщення адміну з ID та деталями,4,1.6.3,Sub-task,US-13,2,✅ Done
+1.6.3.3,Статус needs_attention + виділення в дашборді,4,1.6.3,Sub-task,US-13,1,✅ Done
+1.7,AI-агенти (RAG),2,1,Phase,,21,✅ Done
+1.7.1,Агент-бухгалтер,3,1.7,Story,US-14,8,✅ Done
+1.7.1.1,Інструменти: get_financial_summary + get_courier_earnings,4,1.7.1,Sub-task,US-14,2,✅ Done
+1.7.1.2,Claude claude-opus-4-8 tool-use loop,4,1.7.1,Sub-task,US-14,3,✅ Done
+1.7.1.3,Cron: 1-е і 15-е кожного місяця о 08:00,4,1.7.1,Sub-task,US-14,2,✅ Done
+1.7.1.4,Збереження в agent_reports + WhatsApp summary,4,1.7.1,Sub-task,US-14,1,✅ Done
+1.7.2,Агент-юрист,3,1.7,Task,US-14,5,✅ Done
+1.7.3,Агент-маркетолог,3,1.7,Task,US-14,5,✅ Done
+1.7.4,База знань (pgvector RAG),3,1.7,Task,-,3,⏳ Pending
+1.7.4.1,Заповнення knowledge_documents (податкове право),4,1.7.4,Sub-task,-,2,⏳ Pending
+1.7.4.2,Backfill ембедингів (OpenAI text-embedding-3-small),4,1.7.4,Sub-task,-,1,⏳ Pending
+1.8,Безпека,2,1,Phase,,8,✅ Done
+1.8.1,PIN-аутентифікація (crypto.timingSafeEqual),3,1.8,Task,-,2,✅ Done
+1.8.2,Rate limiter: 5 спроб / 15 хвилин,3,1.8,Task,-,2,✅ Done
+1.8.3,Middleware: захист /admin/* та /hub/*,3,1.8,Task,-,2,✅ Done
+1.8.4,CRON_SECRET на всіх cron-ендпоінтах,3,1.8,Task,-,1,✅ Done
+1.8.5,Stripe webhook HMAC-верифікація,3,1.8,Task,-,1,✅ Done
+1.9,Тестування та QA,2,1,Phase,,21,✅ Done
+1.9.1,Unit тести (Vitest × 16),3,1.9,Task,-,5,✅ Done
+1.9.1.1,Тест: isOddFlowerCount (парна/непарна),4,1.9.1,Sub-task,-,1,✅ Done
+1.9.1.2,Тест: EUR↔BGN конвертація (курс 1.95583),4,1.9.1,Sub-task,-,1,✅ Done
+1.9.1.3,Тест: Haversine відстань (geo.ts),4,1.9.1,Sub-task,-,1,✅ Done
+1.9.1.4,Тест: hub routing logic,4,1.9.1,Sub-task,-,1,✅ Done
+1.9.1.5,Тест: рядок форматування дат (іменини),4,1.9.1,Sub-task,-,1,✅ Done
+1.9.2,Integration тести,3,1.9,Task,-,8,✅ Done
+1.9.2.1,POST /api/orders — повний flow,4,1.9.2,Sub-task,-,3,✅ Done
+1.9.2.2,Stripe webhook idempotency,4,1.9.2,Sub-task,-,3,✅ Done
+1.9.2.3,WhatsApp webhook routing,4,1.9.2,Sub-task,-,2,✅ Done
+1.9.3,E2E тест (Playwright): замовлення → доставка,3,1.9,Story,-,8,⏳ Pending
+1.9.4,GitHub Actions CI (tsc + vitest + next build),3,1.9,Task,-,3,✅ Done
+1.10,SEO та юридичні сторінки,2,1,Phase,,5,✅ Done
+1.10.1,Метадані + Open Graph + Schema.org,3,1.10,Task,-,2,✅ Done
+1.10.2,Sitemap.xml + robots.txt,3,1.10,Task,-,1,✅ Done
+1.10.3,Сторінки: Privacy Policy / Terms / Cookies (GDPR),3,1.10,Task,-,2,✅ Done
+1.11,Деплой та запуск,2,1,Phase,,15,❌ Todo
+1.11.1,Vercel: підключити репозиторій + ENV vars,3,1.11,Task,-,2,❌ Todo
+1.11.2,Домен kissmyflowers.bg → DNS → Vercel,3,1.11,Task,-,2,❌ Todo
+1.11.3,Supabase: production проект + всі 10 міграцій,3,1.11,Task,-,3,❌ Todo
+1.11.4,Meta Business: реєстрація + 8 WhatsApp шаблонів,3,1.11,Task,-,3,❌ Todo
+1.11.5,Stripe: перехід з test на live ключі,3,1.11,Task,-,2,❌ Todo
+1.11.6,Google Business Profile (Бургас SEO),3,1.11,Task,-,1,❌ Todo
+1.11.7,Go-live checklist та E2E на staging,3,1.11,Task,-,2,❌ Todo

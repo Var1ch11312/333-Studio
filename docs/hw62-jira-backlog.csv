@@ -1,0 +1,35 @@
+Issue Type,Summary,Description,Priority,Epic Name,Labels,Story Points,Sprint,Status,Fix Version
+Epic,ВІДКРИТТЯ — Клієнт знаходить і обирає букет,Весь функціонал пов'язаний з пошуком та вибором букета клієнтом,High,,,,,To Do,v1.0 MVP
+Epic,ЗАМОВЛЕННЯ — Оформлення та оплата,Checkout flow та оплата через Stripe,High,,,,,To Do,v1.0 MVP
+Epic,ВИКОНАННЯ — Флорист та кур'єр,WhatsApp dispatch + Hub dashboard + фото доставки,High,,,,,To Do,v1.0 MVP
+Epic,УПРАВЛІННЯ — Адмін та AI,Admin dashboard + каталог CRUD + AI агенти,Medium,,,,,To Do,v2.0 Growth
+Epic,ІНФРАСТРУКТУРА — Технічна база,БД міграції + безпека + тести + CI/CD + деплой,High,,,,,To Do,v1.0 MVP
+Story,Як клієнт можу переглядати каталог букетів щоб обрати подарунок за бюджетом і приводом,"AC1: Відображає EUR+BGN ціни одночасно (до 08.08.2026). AC2: Картка має фото/назву/тег. AC3: Завантаження < 2 с на 3G",High,ВІДКРИТТЯ — Клієнт знаходить і обирає букет,MVP,3,Sprint 1,Done,v1.0 MVP
+Story,Як клієнт можу пройти AI-підбір (2 кроки) щоб отримати рекомендацію без перегляду всього каталогу,"AC1: 6 отримувачів × 5 приводів = 30 комбінацій. AC2: Результат показує букет + ціну + пояснення. AC3: Кнопка Замовити веде прямо в checkout",Medium,ВІДКРИТТЯ — Клієнт знаходить і обирає букет,MVP,5,Sprint 2,Done,v2.0 Growth
+Story,Як клієнт можу оформити замовлення у 5 кроків щоб отримати підтвердження та час доставки,"AC1: Валідація адреси + зона доставки. AC2: WA-підтвердження < 1 хв після оплати. AC3: Скасування протягом 5 хв",High,ЗАМОВЛЕННЯ — Оформлення та оплата,MVP,8,Sprint 1,Done,v1.0 MVP
+Story,Як клієнт можу оплатити карткою через Stripe щоб не передавати дані картки магазину,"AC1: Stripe Checkout PCI-DSS compliant. AC2: Після оплати → автоматично до черги флористів. AC3: При помилці — зрозуміле повідомлення",High,ЗАМОВЛЕННЯ — Оформлення та оплата,MVP,5,Sprint 1,Done,v1.0 MVP
+Story,Як клієнт можу отримувати WhatsApp-повідомлення на кожному етапі щоб бути в курсі без дзвінків,"AC1: Повідомлення < 30 с після зміни статусу. AC2: Кур'єр у дорозі = ім'я + час. AC3: Доставлено = фото",High,ВИКОНАННЯ — Флорист та кур'єр,MVP,3,Sprint 1,Done,v1.0 MVP
+Story,Як флорист можу прийняти або відхилити WA-замовлення щоб підтвердити виконання в строк,"AC1: Повідомлення містить склад/адресу/час/суму. AC2: 5 хв таймаут → наступний хаб. AC3: Зайнятий флорист не отримує нових",High,ВИКОНАННЯ — Флорист та кур'єр,MVP,5,Sprint 1,Done,v1.0 MVP
+Story,Як кур'єр можу першим взяти broadcast-замовлення щоб забезпечити справедливий розподіл,"AC1: Broadcast одночасно всім кур'єрам зони. AC2: First-wins атомарний запис. AC3: Решта отримують Вже зайнято",High,ВИКОНАННЯ — Флорист та кур'єр,MVP,8,Sprint 1,Done,v1.0 MVP
+Story,Як кур'єр можу надіслати фото доставки щоб автоматично закрити замовлення,"AC1: Фото → Supabase Storage прив'язане до замовлення. AC2: Статус → delivered автоматично. AC3: Клієнт WA < 1 хв",High,ВИКОНАННЯ — Флорист та кур'єр,MVP,5,Sprint 2,Done,v2.0 Growth
+Story,Як адміністратор можу бачити всі замовлення в реальтаймі щоб оперативно вирішувати проблеми,"AC1: Оновлення без перезавантаження (Realtime). AC2: Поля: ID/клієнт/адреса/статус/флорист/кур'єр/час. AC3: Ручна зміна статусу",High,УПРАВЛІННЯ — Адмін та AI,MVP,5,Sprint 1,Done,v1.0 MVP
+Story,Як адмін можу керувати каталогом з дашборду щоб не залежати від розробника,"AC1: Валідація непарних квітів. AC2: Фото JPEG/PNG/WebP макс 5 МБ. AC3: Soft-delete (active=false)",High,УПРАВЛІННЯ — Адмін та AI,MVP,8,Sprint 2,Done,v2.0 Growth
+Story,Як клієнт можу отримувати нагадування про іменини щоб не забути замовити квіти,"AC1: Нагадування о 09:00 напередодні. AC2: WA містить ім'я + кнопку Замовити. AC3: Cron щоденно ±0 днів",Medium,ВІДКРИТТЯ — Клієнт знаходить і обирає букет,MVP,3,Sprint 2,Done,v2.0 Growth
+Story,Як флорист можу бачити замовлення в Hub-дашборді щоб планувати без залежності від WA,"AC1: Realtime websocket оновлення. AC2: Кольорова пріоритизація статусів. AC3: PIN-доступ окремий від адміна",Medium,ВИКОНАННЯ — Флорист та кур'єр,MVP,5,Sprint 2,Done,v2.0 Growth
+Story,Як адмін отримую сповіщення якщо флорист не прийняв за 5 хв щоб вирішити до порушення SLA,"AC1: Cron кожні 2 хвилини. AC2: WA з ID/адресою/кількістю спроб. AC3: Статус needs_attention + виділення",High,УПРАВЛІННЯ — Адмін та AI,MVP,5,Sprint 2,Done,v2.0 Growth
+Story,Як власник отримую AI-звіт двічі на місяць щоб керувати фінансами без бухгалтера,"AC1: Генерується 1-го і 15-го числа. AC2: Виручка EUR/BGN + ПДВ 20% + податок 10%. AC3: WA summary + посилання на дашборд",Medium,УПРАВЛІННЯ — Адмін та AI,Growth,8,Sprint 3,Done,v3.0 Scale
+Story,Як клієнт можу встановити PWA на смартфон щоб замовляти без браузера,"AC1: Банер після 2-го відвідування. AC2: Offline показує каталог з кешу. AC3: Іконка + назва відповідають бренду",Low,ВІДКРИТТЯ — Клієнт знаходить і обирає букет,Growth,3,Sprint 2,Done,v2.0 Growth
+Task,Supabase: міграції 01–10 (схема БД + RLS + pgvector),,High,ІНФРАСТРУКТУРА — Технічна база,MVP,5,Sprint 1,Done,v1.0 MVP
+Task,GitHub Actions CI: tsc + vitest + next build на кожен PR,,High,ІНФРАСТРУКТУРА — Технічна база,MVP,3,Sprint 2,Done,v2.0 Growth
+Task,Vitest: 16 unit тестів (isOddFlowerCount + EUR/BGN + Haversine + routing),,High,ІНФРАСТРУКТУРА — Технічна база,MVP,5,Sprint 2,Done,v2.0 Growth
+Task,PIN-аутентифікація + rate-limit 5/15хв + crypto.timingSafeEqual,,High,ІНФРАСТРУКТУРА — Технічна база,Security,3,Sprint 1,Done,v1.0 MVP
+Task,Middleware: захист /admin/* та /hub/*,,High,ІНФРАСТРУКТУРА — Технічна база,Security,2,Sprint 1,Done,v1.0 MVP
+Task,SEO: метадані + Schema.org + sitemap.xml,,Medium,ІНФРАСТРУКТУРА — Технічна база,SEO,2,Sprint 2,Done,v2.0 Growth
+Task,Юридичні сторінки: Privacy Policy + Terms + Cookies (GDPR),,Medium,ІНФРАСТРУКТУРА — Технічна база,Legal,2,Sprint 2,Done,v2.0 Growth
+Task,E2E тест (Playwright): checkout → Stripe → Hub → кур'єр → фото,,Highest,ІНФРАСТРУКТУРА — Технічна база,Testing,8,Sprint 3,To Do,v3.0 Scale
+Task,Backfill ембедингів knowledge_documents (OpenAI text-embedding-3-small),,Medium,УПРАВЛІННЯ — Адмін та AI,AI,2,Sprint 3,To Do,v3.0 Scale
+Task,Vercel: production deploy + ENV vars + домен kissmyflowers.bg,,Highest,ІНФРАСТРУКТУРА — Технічна база,Deploy,5,Sprint 3,To Do,v3.0 Scale
+Task,Meta Business: реєстрація + 8 WhatsApp шаблонів (24-48ч approval),,Highest,ІНФРАСТРУКТУРА — Технічна база,Deploy,3,Sprint 3,To Do,v3.0 Scale
+Task,Stripe: перехід з test на live ключі,,High,ІНФРАСТРУКТУРА — Технічна база,Deploy,2,Sprint 3,To Do,v3.0 Scale
+Task,Supabase production проект + 10 міграцій,,High,ІНФРАСТРУКТУРА — Технічна база,Deploy,3,Sprint 3,To Do,v3.0 Scale
+Task,Google Business Profile (Бургас локальний SEO),,Low,ІНФРАСТРУКТУРА — Технічна база,SEO,1,Sprint 3,To Do,v3.0 Scale

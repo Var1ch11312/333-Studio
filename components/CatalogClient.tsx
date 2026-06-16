@@ -3,16 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { DualPrice } from "@/components/DualPrice";
+import type { CatalogProduct } from "@/lib/catalog";
 
-export type CatalogProduct = {
-  id: string;
-  title: string;
-  description: string | null;
-  price_eur: number;
-  flower_count: number;
-  tag: string | null;
-  image_url: string | null;
-};
+export type { CatalogProduct };
 
 const ALL = "Всички";
 

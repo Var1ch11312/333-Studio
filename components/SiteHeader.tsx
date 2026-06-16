@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { SITE } from "@/lib/site";
 
 export function SiteHeader() {
   const { totalItems } = useCart();
@@ -20,13 +21,13 @@ export function SiteHeader() {
       <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
         <Link href="/" className="flex flex-col leading-none">
           <span className="font-serif text-2xl font-semibold tracking-tight" style={{ color: "#A8324A" }}>
-            Kiss My Flowers
+            {SITE.brand}
           </span>
           <span
             className="text-[9px] tracking-[0.32em] uppercase mt-0.5"
             style={{ color: "rgba(168,50,74,0.55)" }}
           >
-            Бургас · Любов и романтика
+            {SITE.city} · {SITE.tagline}
           </span>
         </Link>
 

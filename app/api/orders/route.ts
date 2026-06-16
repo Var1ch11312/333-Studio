@@ -4,8 +4,11 @@ import { getStripeClient } from "@/lib/stripe";
 import { notifyDispatcher, buildOrderCard } from "@/lib/viber";
 import { validateDeliveryAddress } from "@/lib/geo";
 import { isOddFlowerCount } from "@/lib/constants";
+import { trustedUnitPriceEur, titleForId, DELIVERY_FEE_EUR } from "@/lib/catalog";
 
-const DELIVERY_FEE_EUR = 5;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUuid = (s: string) => UUID_RE.test(s);
 
 type OrderItem = {
   product_id: string;
@@ -90,16 +93,45 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: geo.error }, { status: 422 });
   }
 
-  /* ── Calculate totals ── */
-  const subtotalEur = items.reduce(
-    (sum, item) => sum + item.unit_price_eur * item.quantity,
+  /* ── Resolve trusted prices server-side (never trust the browser) ── */
+  const supabase = createServerClient();
+
+  // For UUID ids not covered by the local catalog, fetch the price from DB.
+  const dbPrice = new Map<string, number>();
+  const uuidIds = items
+    .map((i) => i.product_id)
+    .filter((id) => isUuid(id) && trustedUnitPriceEur(id) === null);
+  if (uuidIds.length) {
+    const { data: rows } = await supabase
+      .from("products")
+      .select("id, price_eur")
+      .in("id", uuidIds);
+    for (const row of rows ?? []) {
+      dbPrice.set(row.id as string, Number(row.price_eur));
+    }
+  }
+
+  const resolved: { item: OrderItem; unitPriceEur: number }[] = [];
+  for (const item of items) {
+    const trusted =
+      trustedUnitPriceEur(item.product_id) ?? dbPrice.get(item.product_id) ?? null;
+    if (trusted === null) {
+      return NextResponse.json(
+        { error: `Непознат продукт: ${item.product_id}` },
+        { status: 422 }
+      );
+    }
+    resolved.push({ item, unitPriceEur: trusted });
+  }
+
+  /* ── Calculate totals from trusted prices ── */
+  const subtotalEur = resolved.reduce(
+    (sum, r) => sum + r.unitPriceEur * r.item.quantity,
     0
   );
   const totalAmountEur = subtotalEur + DELIVERY_FEE_EUR;
 
   /* ── Create order in Supabase ── */
-  const supabase = createServerClient();
-
   const { data: order, error: orderErr } = await supabase
     .from("orders")
     .insert({
@@ -131,13 +163,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 
-  /* ── Insert order items ── */
+  /* ── Insert order items (only real UUID products get a product_id FK) ── */
   await supabase.from("order_items").insert(
-    items.map((item) => ({
+    resolved.map((r) => ({
       order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      unit_price_eur: item.unit_price_eur,
+      product_id: isUuid(r.item.product_id) ? r.item.product_id : null,
+      quantity: r.item.quantity,
+      unit_price_eur: r.unitPriceEur,
     }))
   );
 
@@ -165,13 +197,15 @@ export async function POST(req: NextRequest) {
   const session = await stripeClient.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
-      ...items.map((item) => ({
+      ...resolved.map((r) => ({
         price_data: {
           currency: "eur",
-          product_data: { name: item.title ?? "Букет" },
-          unit_amount: Math.round(item.unit_price_eur * 100),
+          product_data: {
+            name: r.item.title ?? titleForId(r.item.product_id) ?? "Букет",
+          },
+          unit_amount: Math.round(r.unitPriceEur * 100),
         },
-        quantity: item.quantity,
+        quantity: r.item.quantity,
       })),
       {
         price_data: {

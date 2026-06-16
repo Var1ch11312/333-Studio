@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { isOddFlowerCount } from "@/lib/constants";
 import { DualPrice } from "@/components/DualPrice";
 import { OddFlowerModal } from "@/components/OddFlowerModal";
+import { UPSELLS, DELIVERY_FEE_EUR, type CatalogProduct } from "@/lib/catalog";
 import {
   ArrowLeft, CreditCard, AlertTriangle,
   Loader2, ChevronDown, ChevronUp, Plus, Check,
@@ -14,23 +14,6 @@ import {
 import Link from "next/link";
 
 /* ─── Constants ────────────────────────────────────────── */
-const DELIVERY_FEE_EUR = 5;
-
-const CATALOG: Record<string, { title: string; price_eur: number; flower_count: number }> = {
-  "1": { title: "Розова Елегантност",  price_eur: 45,  flower_count: 25 },
-  "2": { title: "Алена Страст",        price_eur: 55,  flower_count: 21 },
-  "3": { title: "Бяла Приказка",       price_eur: 65,  flower_count: 17 },
-  "4": { title: "Пролетна Радост",     price_eur: 39,  flower_count: 15 },
-  "5": { title: "Корпоративен Шик",    price_eur: 110, flower_count: 51 },
-  "6": { title: "Изненада за Именник", price_eur: 35,  flower_count: 11 },
-};
-
-const UPSELLS = [
-  { id: "bear",  title: "Плюшена мечка 30 см",   price_eur: 15, emoji: "🧸" },
-  { id: "choco", title: "Raffaello (♥ 18 бр.)",  price_eur: 12, emoji: "🍫" },
-  { id: "card",  title: "Поздравителна картичка", price_eur: 3,  emoji: "💌" },
-];
-
 const TIME_WINDOWS = ["09:00–11:00", "11:00–13:00", "13:00–15:00", "15:00–17:00", "17:00–19:00"];
 
 const GREETING_TEMPLATES = [
@@ -135,13 +118,7 @@ function SaveOccasionBlock({ customerPhone }: { customerPhone: string }) {
 }
 
 /* ─── Main ─────────────────────────────────────────────── */
-export function CheckoutContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const productId = searchParams.get("product") ?? "1";
-  const product = CATALOG[productId] ?? CATALOG["1"];
-
+export function CheckoutContent({ product }: { product: CatalogProduct }) {
   /* Base form */
   const [form, setForm] = useState({ customer_name: "", customer_phone: "", delivery_address: "", notes: "" });
   /* Recipient */
@@ -198,7 +175,7 @@ export function CheckoutContent() {
           payment_method: "card",
           nameday_optin: nameDayConsent,
           items: [
-            { product_id: productId, title: product.title, quantity: 1, unit_price_eur: product.price_eur, flower_count: product.flower_count },
+            { product_id: product.id, title: product.title, quantity: 1, unit_price_eur: product.price_eur, flower_count: product.flower_count },
             ...selectedUpsells,
           ],
           delivery_for_self: deliveryFor === "self",
@@ -242,9 +219,14 @@ export function CheckoutContent() {
         style={{ background: "#FFFFFF", border: "1px solid rgba(168,50,74,0.2)" }}>
         <button type="button" onClick={() => setSummaryOpen(o => !o)}
           className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(168,50,74,0.08)", border: "1px solid rgba(168,50,74,0.15)" }}>
-            <span style={{ fontSize: 22, opacity: 0.6 }}>✿</span>
+          <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center shrink-0"
+            style={{ background: "#F5E4E5", border: "1px solid rgba(168,50,74,0.15)" }}>
+            {product.image_url ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={product.image_url} alt={product.title} className="w-full h-full object-cover" />
+            ) : (
+              <span style={{ fontSize: 22, color: "#A8324A", opacity: 0.5 }}>✿</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold truncate" style={{ color: "#2B2220" }}>{product.title}</p>

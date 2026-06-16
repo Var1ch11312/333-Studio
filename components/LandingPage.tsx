@@ -6,6 +6,7 @@ import { ShoppingBag, Truck, Camera, Heart, Flower2 } from "lucide-react";
 import { CatalogClient, type CatalogProduct } from "@/components/CatalogClient";
 import { BottomNav } from "@/components/BottomNav";
 import { useCart } from "@/contexts/CartContext";
+import { SITE } from "@/lib/site";
 
 // ── Design tokens: "Love & Romance" light theme ──────────────────────────────
 const C = {
@@ -49,7 +50,7 @@ function NavBar() {
       fontFamily: C.sans,
     }}>
       <span style={{ fontFamily: C.serif, fontWeight: 600, fontSize: 18, color: C.rose, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>
-        Kiss My Flowers
+        {SITE.brand}
       </span>
 
       <div style={{ display: "flex", gap: 22, alignItems: "center" }} className="hidden sm:flex">
@@ -110,20 +111,19 @@ function HeroSection() {
         {/* Text */}
         <div style={{ fontFamily: C.sans, maxWidth: 560 }}>
           <p className="lp-eyebrow" style={{ fontSize: 11, letterSpacing: "0.28em", color: C.rose, textTransform: "uppercase", marginBottom: 22, opacity: 0, display: "flex", alignItems: "center", gap: 8 }}>
-            <Heart size={13} fill={C.rose} strokeWidth={0} /> Любов и романтика · Бургас
+            <Heart size={13} fill={C.rose} strokeWidth={0} /> {SITE.hero.eyebrow}
           </p>
           <h1 style={{ margin: 0, lineHeight: 1.02, letterSpacing: "-0.02em" }}>
             <span className="lp-h1-line1" style={{ display: "block", fontFamily: C.serif, fontWeight: 600, fontSize: "clamp(40px,6.5vw,76px)", color: C.ink, opacity: 0 }}>
-              Кажи го с
+              {SITE.hero.line1}
             </span>
             <span className="lp-h1-line2" style={{ display: "block", fontFamily: C.serif, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(44px,7vw,82px)", color: C.rose, lineHeight: 1.0, opacity: 0 }}>
-              цветя.
+              {SITE.hero.line2}
             </span>
           </h1>
 
           <p className="lp-sub" style={{ marginTop: 24, fontSize: "clamp(15px,1.8vw,18px)", lineHeight: 1.6, color: C.inkFade, maxWidth: 440, opacity: 0 }}>
-            Романтични букети от рози и божури, ръчно подбрани от нашите флористи.
-            Доставка до вратата на любимия човек — за под 2 часа в целия Бургас.
+            {SITE.hero.sub}
           </p>
 
           <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
@@ -193,12 +193,12 @@ function CollectionSection({ products }: { products: CatalogProduct[] }) {
   return (
     <section id="catalog" style={{ background: C.bg }}>
       <div style={{ textAlign: "center", padding: "72px clamp(20px,4vw,48px) 8px", fontFamily: C.sans }}>
-        <p style={{ fontSize: 11, letterSpacing: "0.28em", color: C.rose, textTransform: "uppercase", marginBottom: 14 }}>Колекция</p>
+        <p style={{ fontSize: 11, letterSpacing: "0.28em", color: C.rose, textTransform: "uppercase", marginBottom: 14 }}>{SITE.collection.eyebrow}</p>
         <h2 style={{ fontFamily: C.serif, fontWeight: 600, fontSize: "clamp(30px,5vw,52px)", letterSpacing: "-0.02em", color: C.ink, margin: 0 }}>
-          Любов &amp; Романтика
+          {SITE.collection.title}
         </h2>
         <p style={{ fontSize: 15, color: C.inkFade, maxWidth: 480, margin: "16px auto 0", lineHeight: 1.6 }}>
-          Букети, създадени за най-нежните моменти — годеж, годишнина или просто „обичам те“.
+          {SITE.collection.sub}
         </p>
       </div>
       <CatalogClient products={products} />
@@ -298,7 +298,7 @@ function CTASection() {
 function FooterSection() {
   const COLS = [
     { title: "Магазин",  links: [["Колекция", "#catalog"], ["За нас", "#about"], ["Как работи", "#protocol"]] },
-    { title: "Компания", links: [["Флористи", "#about"], ["Контакти", "mailto:hello@kissmyflowers.bg"], ["Бургас", "#about"]] },
+    { title: "Компания", links: [["Флористи", "#about"], ["Контакти", `mailto:${SITE.email}`], [SITE.city, "#about"]] },
     { title: "Правно",   links: [["Поверителност", "/privacy"], ["Условия", "/terms"], ["Връщане", "/refund"]] },
   ] as const;
 
@@ -307,9 +307,9 @@ function FooterSection() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "2fr repeat(3, 1fr)", gap: 40, marginBottom: 48 }} className="footer-grid">
           <div>
-            <p style={{ fontFamily: C.serif, fontWeight: 600, fontSize: 22, color: C.rose, marginBottom: 12 }}>Kiss My Flowers</p>
+            <p style={{ fontFamily: C.serif, fontWeight: 600, fontSize: 22, color: C.rose, marginBottom: 12 }}>{SITE.brand}</p>
             <p style={{ fontSize: 13.5, lineHeight: 1.7, color: C.inkMuted, maxWidth: 250 }}>
-              Романтични букети с доставка за час в Бургас. Всеки букет — създаден с любов.
+              Романтични букети с доставка за час в {SITE.city}. Всеки букет — създаден с любов.
             </p>
           </div>
           {COLS.map(col => (
@@ -329,10 +329,10 @@ function FooterSection() {
         </div>
         <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 22, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14 }}>
           <p style={{ fontSize: 12, color: C.inkMuted, letterSpacing: "0.02em" }}>
-            © {new Date().getFullYear()} Kiss My Flowers · Бургас, България
+            © {new Date().getFullYear()} {SITE.brand} · {SITE.city}, България
           </p>
           <p style={{ fontSize: 12, color: C.inkMuted, display: "flex", alignItems: "center", gap: 6 }}>
-            Създадено с <Heart size={12} fill={C.rose} strokeWidth={0} /> в Бургас
+            Създадено с <Heart size={12} fill={C.rose} strokeWidth={0} /> в {SITE.city}
           </p>
         </div>
       </div>

@@ -1,6 +1,17 @@
-# AMUR.BG — Premium Flower Delivery, Burgas
+# Kiss My Flowers — Premium Flower Delivery, Burgas
 
 Premium hyper-local flower delivery platform for Burgas, Bulgaria. Connects customers, florists (Hubs), and couriers through automated WhatsApp-based dispatch.
+
+> **Going live?** See [`docs/LAUNCH-CHECKLIST.md`](docs/LAUNCH-CHECKLIST.md) for exactly what's needed (keys, domain, photos) and step-by-step deploy.
+
+## Editing prices & content
+
+No database required — the catalog and copy live in two files you can edit directly:
+
+- **`lib/catalog.ts`** — bouquets (title, description, **price in EUR**, flower count, tag, photo), the delivery fee and checkout add-ons. The storefront, product pages and checkout all read from here.
+- **`lib/site.ts`** — brand name, tagline, contact details and the home-page hero/collection copy.
+
+When Supabase is configured, the live `products` table takes priority and these files become the offline fallback. Keep every `flower_count` **odd** (even = funeral in Bulgarian culture).
 
 ## Roles
 
@@ -147,14 +158,16 @@ HUB_PIN + HUB_TOKEN
 Apply in order in Supabase SQL Editor:
 
 ```
-01_init.sql             Core schema + RLS
-02_couriers.sql         Couriers + nameday optins
-03_saved_occasions.sql  Customer birthdays
-04_products_seed.sql    Sample catalog (6 bouquets)
-05_order_extras.sql     Extended order fields
-06_api_payments.sql     Crypto payment tracking
-07_whatsapp_dispatch.sql  Dispatch system
-08_rag_agents.sql       AI agents + pgvector
+01_init.sql                    Core schema + RLS
+02_couriers.sql                Couriers + nameday optins
+03_saved_occasions.sql         Customer birthdays
+04_products_seed.sql           Initial product columns + seed
+05_order_extras.sql            Extended order fields
+06_api_payments.sql            Crypto payment tracking
+07_whatsapp_dispatch.sql       Dispatch system
+08_rag_agents.sql              AI agents + pgvector
+09_knowledge_seed.sql          Knowledge base seed (RAG)
+10_kiss_my_flowers_catalog.sql Final catalog — 8 bouquets (matches lib/catalog.ts)
 ```
 
 Enable pgvector before migration 08:

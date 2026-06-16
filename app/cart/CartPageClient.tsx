@@ -20,7 +20,7 @@ export function CartPageClient() {
     : "/checkout";
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#100D09" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "#FBF6F3" }}>
       <SiteHeader />
       <div className="h-16" />
 
@@ -30,28 +30,28 @@ export function CartPageClient() {
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-xs tracking-wider uppercase rounded-full px-4 py-2 mb-6 transition-colors"
-          style={{ border: "1px solid rgba(197,160,89,0.25)", color: "rgba(249,246,240,0.6)" }}
+          style={{ border: "1px solid #ECDFD9", color: "#6E5F59", background: "#FFFFFF" }}
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Продължи пазаруването
         </Link>
 
-        <h1 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#F0E8D8" }}>
+        <h1 className="font-serif text-2xl font-semibold mb-6" style={{ color: "#2B2220" }}>
           Кошница
         </h1>
 
         {!items.length ? (
           <div className="flex flex-col items-center gap-6 py-16">
-            <ShoppingBag className="w-12 h-12" style={{ color: "rgba(197,160,89,0.2)" }} />
-            <p className="text-sm" style={{ color: "rgba(249,246,240,0.4)" }}>
+            <ShoppingBag className="w-12 h-12" style={{ color: "#EFCBD0" }} />
+            <p className="text-sm" style={{ color: "#9B8B84" }}>
               Кошницата е празна
             </p>
             <Link
               href="/"
               className="text-xs tracking-wider uppercase rounded-full px-6 py-2.5"
-              style={{ background: "linear-gradient(135deg, #BF9A50 0%, #96772F 100%)", color: "#0A0907" }}
+              style={{ background: "linear-gradient(135deg, #C24B5E 0%, #8E2438 100%)", color: "#FFFFFF" }}
             >
-              Разгледай каталога
+              Разгледай колекцията
             </Link>
           </div>
         ) : (
@@ -60,12 +60,12 @@ export function CartPageClient() {
               <div
                 key={item.id}
                 className="flex gap-4 rounded-2xl p-4"
-                style={{ background: "#1A1410", border: "1px solid rgba(197,160,89,0.1)" }}
+                style={{ background: "#FFFFFF", border: "1px solid #ECDFD9" }}
               >
                 {/* Thumbnail */}
                 <div
                   className="shrink-0 rounded-xl overflow-hidden"
-                  style={{ width: 72, height: 72, background: "#130F0B" }}
+                  style={{ width: 72, height: 72, background: "#F5E4E5" }}
                 >
                   {item.image_url ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -73,21 +73,20 @@ export function CartPageClient() {
                       src={item.image_url}
                       alt={item.title}
                       className="w-full h-full object-cover"
-                      style={{ filter: "brightness(0.8)" }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="font-serif text-3xl" style={{ color: "#C5A059", opacity: 0.2 }}>✿</span>
+                      <span className="font-serif text-3xl" style={{ color: "#A8324A", opacity: 0.35 }}>✿</span>
                     </div>
                   )}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 flex flex-col gap-1 min-w-0">
-                  <p className="font-serif text-sm font-semibold truncate" style={{ color: "#EDE5D5" }}>
+                  <p className="font-serif text-sm font-semibold truncate" style={{ color: "#2B2220" }}>
                     {item.title}
                   </p>
-                  <p className="text-[11px]" style={{ color: "rgba(197,160,89,0.7)" }}>
+                  <p className="text-[11px]" style={{ color: "#A8324A" }}>
                     {item.flower_count} стъбла
                   </p>
                   <DualPrice priceEur={item.price_eur * item.quantity} layout="inline" />
@@ -98,28 +97,28 @@ export function CartPageClient() {
                   <button
                     onClick={() => removeItem(item.id)}
                     className="p-1 transition-opacity hover:opacity-60"
-                    style={{ color: "rgba(249,246,240,0.3)" }}
+                    style={{ color: "#C9B8B0" }}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                   <div
                     className="flex items-center rounded-full overflow-hidden"
-                    style={{ border: "1px solid rgba(197,160,89,0.25)" }}
+                    style={{ border: "1px solid #ECDFD9" }}
                   >
                     <button
                       onClick={() => updateQty(item.id, item.quantity - 1)}
                       className="w-8 h-8 flex items-center justify-center"
-                      style={{ color: "#C5A059" }}
+                      style={{ color: "#A8324A" }}
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="w-6 text-center text-xs font-semibold" style={{ color: "#F0E8D8" }}>
+                    <span className="w-6 text-center text-xs font-semibold" style={{ color: "#2B2220" }}>
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQty(item.id, item.quantity + 1)}
                       className="w-8 h-8 flex items-center justify-center"
-                      style={{ color: "#C5A059" }}
+                      style={{ color: "#A8324A" }}
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -131,20 +130,20 @@ export function CartPageClient() {
             {/* Order summary */}
             <div
               className="rounded-2xl p-4 mt-2"
-              style={{ background: "#1A1410", border: "1px solid rgba(197,160,89,0.1)" }}
+              style={{ background: "#FFFFFF", border: "1px solid #ECDFD9" }}
             >
               <div className="flex flex-col gap-2">
-                <div className="flex justify-between text-sm" style={{ color: "rgba(249,246,240,0.55)" }}>
+                <div className="flex justify-between text-sm" style={{ color: "#6E5F59" }}>
                   <span>Букети</span>
                   <span>{totalEur.toFixed(2)} EUR</span>
                 </div>
-                <div className="flex justify-between text-sm" style={{ color: "rgba(249,246,240,0.55)" }}>
+                <div className="flex justify-between text-sm" style={{ color: "#6E5F59" }}>
                   <span>Доставка</span>
                   <span>{DELIVERY_FEE} EUR</span>
                 </div>
                 <div
                   className="flex justify-between font-serif text-base font-semibold pt-2 mt-1"
-                  style={{ borderTop: "1px solid rgba(197,160,89,0.12)", color: "#F0E8D8" }}
+                  style={{ borderTop: "1px solid #ECDFD9", color: "#2B2220" }}
                 >
                   <span>Общо</span>
                   <DualPrice priceEur={grandTotal} layout="inline" />
@@ -160,9 +159,9 @@ export function CartPageClient() {
         <div
           className="fixed bottom-0 left-0 right-0 z-40 px-4"
           style={{
-            background: "rgba(16,13,9,0.97)",
+            background: "rgba(255,255,255,0.97)",
             backdropFilter: "blur(20px)",
-            borderTop: "1px solid rgba(197,160,89,0.15)",
+            borderTop: "1px solid #ECDFD9",
             paddingTop: 12,
             paddingBottom: "max(16px, env(safe-area-inset-bottom, 16px))",
           }}
@@ -172,9 +171,9 @@ export function CartPageClient() {
               href={checkoutHref}
               className="w-full h-12 rounded-full flex items-center justify-center gap-2 text-sm font-semibold tracking-wider"
               style={{
-                background: "linear-gradient(135deg, #BF9A50 0%, #96772F 100%)",
-                color: "#0A0907",
-                boxShadow: "0 2px 20px rgba(197,160,89,0.2)",
+                background: "linear-gradient(135deg, #C24B5E 0%, #8E2438 100%)",
+                color: "#FFFFFF",
+                boxShadow: "0 6px 20px rgba(168,50,74,0.28)",
               }}
             >
               Продължи към поръчката →

@@ -1,45 +1,46 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* === AMUR.BG — OLD MONEY DESIGN SYSTEM === */
+  /* === KISS MY FLOWERS — LOVE & ROMANCE DESIGN SYSTEM === */
+  /* Light, airy, editorial romance — Burgas premium flower delivery */
 
-  /* Core palette */
-  --color-background:            #1A1A1A;
-  --color-foreground:            #F9F6F0;
+  /* Core palette — warm blush cream */
+  --color-background:            #FBF6F3;
+  --color-foreground:            #2B2220;
 
   /* Card / surface */
-  --color-card:                  #222222;
-  --color-card-foreground:       #F9F6F0;
+  --color-card:                  #FFFFFF;
+  --color-card-foreground:       #2B2220;
 
   /* UI chrome */
-  --color-border:                #333333;
-  --color-input:                 #252525;
-  --color-ring:                  #C5A059;
+  --color-border:                #ECDFD9;
+  --color-input:                 #FFFFFF;
+  --color-ring:                  #A8324A;
 
-  /* Primary — muted gold / champagne */
-  --color-primary:               #C5A059;
-  --color-primary-foreground:    #1A1A1A;
+  /* Primary — romantic wine rose */
+  --color-primary:               #A8324A;
+  --color-primary-foreground:    #FFFFFF;
 
-  /* Secondary — dark surface */
-  --color-secondary:             #272727;
-  --color-secondary-foreground:  #F9F6F0;
+  /* Secondary — soft blush */
+  --color-secondary:             #F5E4E5;
+  --color-secondary-foreground:  #7A2738;
 
   /* Muted — dim text / placeholders */
-  --color-muted:                 #272727;
-  --color-muted-foreground:      #8A8880;
+  --color-muted:                 #F3EAE5;
+  --color-muted-foreground:      #9B8B84;
 
-  /* Accent — same gold family */
-  --color-accent:                #C5A059;
-  --color-accent-foreground:     #1A1A1A;
+  /* Accent — blush pink */
+  --color-accent:                #EFCBD0;
+  --color-accent-foreground:     #7A2738;
 
   /* Destructive */
-  --color-destructive:           #7A1D1D;
-  --color-destructive-foreground: #F9F6F0;
+  --color-destructive:           #B3261E;
+  --color-destructive-foreground: #FFFFFF;
 
   /* Typography */
-  --font-sans:   var(--font-geist-sans);
+  --font-sans:   var(--font-inter);
   --font-serif:  var(--font-playfair);
-  --font-mono:   var(--font-geist-mono);
+  --font-mono:   var(--font-jetbrains);
 }
 
 /* ─── Animations ─────────────────────────────── */
@@ -48,16 +49,9 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes goldPulse {
-  0%, 100% { opacity: 0.04; transform: scale(1); }
-  50%       { opacity: 0.09; transform: scale(1.08); }
-}
-
-@keyframes scrollLine {
-  0%   { transform: scaleY(0); transform-origin: top; }
-  50%  { transform: scaleY(1); transform-origin: top; }
-  51%  { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
+@keyframes petalFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(4deg); }
 }
 
 @keyframes shimmer {
@@ -65,46 +59,50 @@
   100% { background-position:  200% center; }
 }
 
-.animate-fadeInUp { animation: fadeInUp 0.6s ease both; }
-.animate-gold-pulse { animation: goldPulse 4s ease-in-out infinite; }
-.animate-scroll-line { animation: scrollLine 1.8s ease-in-out infinite; }
+.animate-fadeInUp  { animation: fadeInUp 0.6s ease both; }
+.animate-petal     { animation: petalFloat 6s ease-in-out infinite; }
 
-/* ─── Velvet card ────────────────────────────── */
-.velvet-card {
-  background: #1C1915;
-  border: 1px solid rgba(197,160,89,0.12);
-  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+/* ─── Bloom card (product / surface) ─────────── */
+.bloom-card {
+  background: #FFFFFF;
+  border: 1px solid #ECDFD9;
+  transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
 }
-.velvet-card:hover {
-  border-color: rgba(197,160,89,0.38);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(197,160,89,0.12);
+.bloom-card:hover {
+  border-color: rgba(168,50,74,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 50px rgba(122,39,56,0.12);
 }
 
-/* ─── Gold shimmer text ──────────────────────── */
-.text-gold-shimmer {
-  background: linear-gradient(90deg, #C5A059 0%, #F0D590 40%, #C5A059 60%, #9A7A38 100%);
+/* ─── Rose shimmer text ──────────────────────── */
+.text-rose-shimmer {
+  background: linear-gradient(90deg, #A8324A 0%, #D9627A 45%, #A8324A 60%, #7A2738 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 4s linear infinite;
+  animation: shimmer 5s linear infinite;
 }
+
 body {
-  background-color: #1A1A1A;
-  color: #F9F6F0;
-  font-family: var(--font-geist-sans, Arial, sans-serif);
+  background-color: #FBF6F3;
+  color: #2B2220;
+  font-family: var(--font-inter, system-ui, sans-serif);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Gold divider utility ───────────────────── */
-.divider-gold {
-  border-color: #C5A059;
-  opacity: 0.3;
+/* ─── Soft divider ───────────────────────────── */
+.divider-rose {
+  border-color: #A8324A;
+  opacity: 0.25;
 }
 
-/* ─── Subtle gold glow on focus ─────────────── */
-.focus-gold:focus-visible {
+/* ─── Focus ring ─────────────────────────────── */
+.focus-rose:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #C5A059;
+  box-shadow: 0 0 0 2px #A8324A;
 }
+
+/* Hide scrollbar for filter rows */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

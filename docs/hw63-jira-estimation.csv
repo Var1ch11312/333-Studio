@@ -1,0 +1,88 @@
+SCRUM ID,Епік,Назва задачі,O (год),M (год),P (год),E = (O+4M+P)/6,SD = (P-O)/6,Статус в Jira
+DESIGN—ДИ,,,,,,,
+SCRUM-56,DESIGN—ДИ,Figma: Карточка товару — фото + ціна EUR/BGN + тег + hover quick-add,4,6,12,6.7,1.3,DONE
+SCRUM-57,DESIGN—ДИ,Figma: Головна сторінка / Storefront — hero + банер + каталог-сітка,4,8,16,8.7,2.0,TO DO
+SCRUM-58,DESIGN—ДИ,Figma: Сторінка каталогу + chip-фільтри + порожній стан,4,6,12,6.7,1.3,TO DO
+SCRUM-59,DESIGN—ДИ,Figma: Checkout flow — 5 кроків + progress bar + валідація,6,10,20,11.0,2.3,TO DO
+SCRUM-60,DESIGN—ДИ,Figma: Admin Dashboard — таблиця замовлень + фільтри + статуси,4,8,16,8.7,2.0,TO DO
+SCRUM-61,DESIGN—ДИ,Figma: Сторінка успіху після оплати — підтвердження + деталі,4,4,8,4.7,0.7,TO DO
+SCRUM-62,DESIGN—ДИ,Figma: Мобільна версія (адаптив 375px) — всі сторінки,6,10,20,11.0,2.3,IN REVIEW
+SCRUM-63,DESIGN—ДИ,Figma: Hub Dashboard — Realtime статуси + кольорова пріоритизація,4,6,12,6.7,1.3,TO DO
+SCRUM-64,DESIGN—ДИ,Design System — палітра + типографіка + компоненти (Button / Input / Card),4,6,10,6.3,1.0,TO DO
+CORE—ЯДР,,,,,,,
+SCRUM-01,CORE—ЯДР,Вибір технічного стеку (Next.js 16 + Supabase + Tailwind v4 + TypeScript),4,4,8,4.7,0.7,DONE
+SCRUM-02,CORE—ЯДР,Налаштування репозиторію + GitHub Actions CI (tsc + vitest + next build),4,6,12,6.7,1.3,DONE
+SCRUM-03,CORE—ЯДР,Проектування схеми БД — 8 таблиць + RLS + pgvector extension,6,8,16,9.0,1.7,DONE
+SCRUM-04,CORE—ЯДР,Supabase міграції 01–05 (products / orders / hubs / couriers / users),4,6,12,6.7,1.3,DONE
+SCRUM-05,CORE—ЯДР,Supabase міграції 06–10 (agent_reports / knowledge_documents / namedays),4,6,10,6.3,1.0,DONE
+SCRUM-06,CORE—ЯДР,PIN аутентифікація (crypto.timingSafeEqual) + rate limit 5 спроб / 15 хвилин,4,8,16,8.7,2.0,DONE
+SCRUM-07,CORE—ЯДР,Middleware — захист маршрутів /admin/* та /hub/* (httpOnly cookie),4,4,8,4.7,0.7,DONE
+SCRUM-31,CORE—ЯДР,Налаштування домену kissmyflowers.bg + DNS записи → Vercel + SSL,4,4,8,4.7,0.7,IN REVIEW
+SCRUM-35,CORE—ЯДР,Supabase: створити production проект + застосувати всі 10 міграцій,4,8,16,8.7,2.0,IN PROGRESS
+SHOP—МАГ,,,,,,,
+SCRUM-08,SHOP—МАГ,Storefront / каталог — ProductCard + EUR/BGN подвійне ціноутворення,4,8,16,8.7,2.0,DONE
+SCRUM-09,SHOP—МАГ,Фільтрація за тегами (Бестселлер / Сезонний / Преміум) — chip-фільтри,4,4,8,4.7,0.7,DONE
+SCRUM-10,SHOP—МАГ,AI Finder — 2-кроковий wizard (6 отримувачів × 5 приводів = 30 комбінацій),4,8,16,8.7,2.0,DONE
+SCRUM-11,SHOP—МАГ,Checkout Step 1–2: вибір букета + адреса + зона доставки (Haversine),6,10,20,11.0,2.3,DONE
+SCRUM-12,SHOP—МАГ,Checkout Step 3–4: дата / час доставки + контактні дані клієнта,4,8,16,8.7,2.0,DONE
+SCRUM-13,SHOP—МАГ,Checkout Step 5: підсумок + валідація isOddFlowerCount + перехід до Stripe,4,6,12,6.7,1.3,DONE
+SCRUM-14,SHOP—МАГ,Stripe Checkout Session (server-side, PCI-DSS compliant),4,8,16,8.7,2.0,DONE
+SCRUM-15,SHOP—МАГ,Stripe Webhook обробник — idempotency key + автозапуск маршрутизації,6,10,20,11.0,2.3,DONE
+SCRUM-16,SHOP—МАГ,Сторінка Success після оплати — деталі замовлення + очікуваний час,4,4,8,4.7,0.7,DONE
+SCRUM-17,SHOP—МАГ,PWA — manifest.json + Service Worker + offline кеш + Install Banner,4,8,16,8.7,2.0,DONE
+SCRUM-34,SHOP—МАГ,Stripe: переключення з test keys на live keys + оновлення webhook URL,4,4,6,4.3,0.3,TO DO
+OPS—ОПЕР,,,,,,,
+SCRUM-18,OPS—ОПЕР,WhatsApp Cloud API — lib/whatsapp.ts (sendText + sendInteractive + sendMedia),4,8,16,8.7,2.0,DONE
+SCRUM-19,OPS—ОПЕР,Алгоритм маршрутизації Hub (Haversine + сортування хабів за відстанню),4,8,16,8.7,2.0,DONE
+SCRUM-20,OPS—ОПЕР,WA повідомлення флористу — склад + адреса + час + кнопки Accept/Reject,4,8,16,8.7,2.0,DONE
+SCRUM-21,OPS—ОПЕР,Таймаут 5 хвилин + автопереключення замовлення на наступний Hub,6,10,20,11.0,2.3,DONE
+SCRUM-22,OPS—ОПЕР,Broadcast dispatch кур'єрам — first-wins атомарний запис (race condition),6,10,20,11.0,2.3,DONE
+SCRUM-23,OPS—ОПЕР,WhatsApp медіа webhook — прийом фото від кур'єра + валідація,6,8,16,9.0,1.7,DONE
+SCRUM-24,OPS—ОПЕР,Фото → Supabase Storage + автозміна статусу delivered + WA клієнту,4,6,12,6.7,1.3,DONE
+SCRUM-25,OPS—ОПЕР,Cron nameday-reminders — щоденно о 09:00 + WA з іменинниками,4,6,12,6.7,1.3,DONE
+SCRUM-26,OPS—ОПЕР,Cron dispatch-timeout — ескалація прострочених замовлень кожні 2 хв,4,6,12,6.7,1.3,DONE
+SCRUM-32,OPS—ОПЕР,Meta Developer: реєстрація + WhatsApp Business верифікація акаунту,4,8,16,8.7,2.0,IN PROGRESS
+SCRUM-33,OPS—ОПЕР,WhatsApp: подача 8 шаблонів повідомлень на approval Meta (24-48 год),4,8,20,9.3,2.7,TO DO
+ADMIN—П,,,,,,,
+SCRUM-27,ADMIN—П,Admin Dashboard — таблиця замовлень + фільтри (статус/хаб/дата) + Realtime,6,10,20,11.0,2.3,DONE
+SCRUM-28,ADMIN—П,Admin — ручна зміна статусу + переназначення кур'єра вручну,4,8,16,8.7,2.0,DONE
+SCRUM-29,ADMIN—П,Escalation alert — needs_attention статус + виділення в дашборді,4,4,8,4.7,0.7,DONE
+SCRUM-38,ADMIN—П,CRUD каталогу + завантаження фото (Supabase Storage) + soft-delete,6,10,20,11.0,2.3,DONE
+SCRUM-37,ADMIN—П,Перегляд AI-звітів в панелі Admin (agent_reports з фільтрацією по типу),4,8,16,8.7,2.0,TO DO
+AI—ИИ АГЕ,,,,,,,
+SCRUM-30,AI—ИИ АГЕ,Інструменти агентів — getFinancialSummary + getCourierEarnings + getHubPerformance + getOrderMetrics,8,12,24,13.3,2.7,DONE
+SCRUM-41,AI—ИИ АГЕ,Агент-бухгалтер — Claude claude-opus-4-8 + tool-use loop + болгарські податки 10%/20% + WA,8,14,24,14.7,2.7,DONE
+SCRUM-42,AI—ИИ АГЕ,Агент-юрист — аналіз ЕООД/ЄТ/ГД структур + оптимізація податкового навантаження,6,12,24,13.0,3.0,DONE
+SCRUM-43,AI—ИИ АГЕ,Агент-маркетолог — метрики конверсії + топ-продукти + A/B ідеї + сезонний аналіз,6,12,20,12.3,2.3,DONE
+SCRUM-44,AI—ИИ АГЕ,Cron jobs для 3 агентів (1-го/15-го/щопонеділка) + збереження agent_reports,4,8,16,8.7,2.0,DONE
+SCRUM-36,AI—ИИ АГЕ,Заповнити knowledge_documents (20+ документів: ЗКПО / ЗДДС / КТ / маркетинг),8,12,24,13.3,2.7,IN PROGRESS
+TEST—ТЕС,,,,,,,
+SCRUM-45,TEST—ТЕС,Unit тести Vitest — isOddFlowerCount + EUR↔BGN + Haversine + hub routing (16 тестів),4,6,12,6.7,1.3,DONE
+SCRUM-47,TEST—ТЕС,Integration тест — POST /api/orders: повний flow від payload до pending_hub,6,10,20,11.0,2.3,DONE
+SCRUM-48,TEST—ТЕС,Integration тест — Stripe webhook idempotency (дублікат не створює другий ордер),6,10,20,11.0,2.3,DONE
+SCRUM-49,TEST—ТЕС,Integration тест — WhatsApp webhook routing (hub_accept / hub_reject / courier_accept),4,8,16,8.7,2.0,DONE
+SCRUM-40,TEST—ТЕС,E2E Playwright — checkout → Stripe → Hub WA → Dashboard → Courier → фото → delivered,8,16,24,16.0,2.7,TO DO
+SEO—ПОИ,,,,,,,
+SCRUM-50,SEO—ПОИ,Метадані + Open Graph + Schema.org LocalBusiness (Бургас) — всі сторінки,4,6,12,6.7,1.3,DONE
+SCRUM-51,SEO—ПОИ,Sitemap.xml + robots.txt (автогенерація Next.js App Router),4,4,6,4.3,0.3,DONE
+SCRUM-53,SEO—ПОИ,Сторінки Privacy Policy + Terms of Service + Cookie Consent (GDPR),4,6,12,6.7,1.3,DONE
+SCRUM-39,SEO—ПОИ,Google Business Profile — реєстрація + верифікація (Бургас локальний SEO),4,4,6,4.3,0.3,IDEA
+SCRUM-52,SEO—ПОИ,Підготовити контент для Instagram / соцмережі (фото + тексти + хештеги),4,6,10,6.3,1.0,IDEA
+GTM—ЗАП,,,,,,,
+SCRUM-54,GTM—ЗАП,Go-live checklist — пройти всі 7 воріт безпеки + smoke test на staging,4,8,16,8.7,2.0,TO DO
+SCRUM-46,GTM—ЗАП,Підключити перший Hub — зустріч з флористом + навчання + тест flow,4,6,12,6.7,1.3,IDEA
+SCRUM-55,GTM—ЗАП,Onboarding кур'єрів — 3-5 осіб + тест broadcast dispatch + інструкція,4,6,12,6.7,1.3,IDEA
+,,,,,,,,
+ПІДСУМОК ПО ЕПІКАХ,,,,,,,,
+DESIGN—ДИ (9 задач),,,,,,69.5,,
+CORE—ЯДР (9 задач),,,,,,65.0,,
+SHOP—МАГ (11 задач),,,,,,86.7,,
+OPS—ОПЕР (11 задач),,,,,,97.7,,
+ADMIN—П (5 задач),,,,,,43.2,,
+AI—ИИ АГЕ (6 задач),,,,,,75.3,,
+TEST—ТЕС (5 задач),,,,,,53.4,,
+SEO—ПОИ (5 задач),,,,,,28.3,,
+GTM—ЗАП (3 задачі),,,,,,21.7,,
+ЗАГАЛЬНА ОЦІНКА (64 задачі),,,,,,540.8,,
+В ЛЮДИНО-ДНЯХ (8 год/день),,,,,,67.6,,
+В ЛЮДИНО-МІСЯЦЯХ (20 днів/міс),,,,,,3.4,,

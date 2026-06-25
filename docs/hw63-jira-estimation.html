@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HW 6.3 — PERT оцінка по Jira Epics</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #F4F5F7;
+    color: #172B4D;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ─── HEADER ─── */
+  .hdr {
+    background: #0052CC;
+    color: #fff;
+    padding: 32px 40px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .hdr-jira-icon {
+    width: 40px; height: 40px;
+    background: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .hdr-jira-icon svg { width: 26px; height: 26px; }
+  .hdr-text h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+  .hdr-text p { color: rgba(255,255,255,0.8); margin-top: 4px; font-size: 13px; max-width: 600px; }
+  .hdr-badges { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* ─── FORMULA BAR ─── */
+  .formula-bar {
+    background: #0747A6;
+    padding: 16px 40px;
+    display: flex;
+    gap: 48px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .f-item { display: flex; align-items: center; gap: 10px; }
+  .f-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em; }
+  .f-formula { font-size: 15px; font-weight: 700; color: #fff; font-family: 'Courier New', monospace; }
+  .f-formula .accent { color: #79E2F2; }
+
+  /* ─── SUMMARY METRICS ─── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: #DFE1E6;
+  }
+  .metric-card {
+    background: #fff;
+    padding: 24px 28px;
+    text-align: center;
+  }
+  .metric-val { font-size: 40px; font-weight: 300; color: #0052CC; line-height: 1; font-family: 'Segoe UI', sans-serif; }
+  .metric-unit { font-size: 12px; color: #6B778C; margin-top: 4px; }
+  .metric-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #97A0AF; margin-top: 8px; }
+
+  /* ─── EPIC BARS ─── */
+  .epics-section { padding: 32px 40px; }
+  .section-hdr { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #6B778C; font-weight: 700; margin-bottom: 16px; }
+  .epic-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 40px; }
+  .epic-row { display: flex; align-items: center; gap: 10px; }
+  .epic-pill {
+    width: 120px;
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+  .epic-bar-track { flex: 1; background: #EBECF0; height: 24px; border-radius: 3px; overflow: hidden; }
+  .epic-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 8px; }
+  .epic-bar-fill span { font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .epic-h { text-align: right; width: 70px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .epic-n { width: 55px; text-align: right; font-size: 10px; color: #97A0AF; flex-shrink: 0; }
+
+  /* Epic colors */
+  .design-pill { background: #FF8B00; color: #fff; }
+  .core-pill   { background: #0052CC; color: #fff; }
+  .shop-pill   { background: #00875A; color: #fff; }
+  .ops-pill    { background: #BF2600; color: #fff; }
+  .admin-pill  { background: #6554C0; color: #fff; }
+  .ai-pill     { background: #00B8D9; color: #fff; }
+  .test-pill   { background: #FF5630; color: #fff; }
+  .seo-pill    { background: #36B37E; color: #fff; }
+  .gtm-pill    { background: #253858; color: #fff; }
+
+  .design-bar { background: #FF8B00; }
+  .core-bar   { background: #0052CC; }
+  .shop-bar   { background: #00875A; }
+  .ops-bar    { background: #BF2600; }
+  .admin-bar  { background: #6554C0; }
+  .ai-bar     { background: #00B8D9; }
+  .test-bar   { background: #FF5630; }
+  .seo-bar    { background: #36B37E; }
+  .gtm-bar    { background: #253858; }
+
+  /* ─── TABLES ─── */
+  .tables-wrap { padding: 0 40px 60px; }
+  .epic-block { margin-bottom: 36px; }
+  .epic-block-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+  }
+  .epic-block-header .e-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .epic-block-header .e-count { font-size: 11px; color: rgba(255,255,255,0.7); margin-left: auto; }
+  .epic-block-header .e-total { font-size: 13px; font-weight: 700; color: #fff; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 0 0 4px 4px; overflow: hidden; }
+  thead th {
+    background: #F4F5F7;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #6B778C;
+    font-weight: 700;
+    border-bottom: 2px solid #DFE1E6;
+  }
+  thead th.num { text-align: center; }
+  tbody tr { border-bottom: 1px solid #F4F5F7; }
+  tbody tr:hover { background: #FAFBFC; }
+  tbody td { padding: 9px 12px; font-size: 12px; vertical-align: middle; }
+  .td-id { width: 90px; }
+  .td-id a {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #DEEBFF;
+    color: #0052CC;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+  }
+  .td-num { text-align: center; color: #6B778C; width: 60px; }
+  .td-e { text-align: center; font-weight: 700; color: #172B4D; width: 70px; font-size: 13px; }
+  .td-sd { text-align: center; color: #97A0AF; font-size: 11px; width: 50px; }
+
+  /* Status badges */
+  .st { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; }
+  .st-done { background: #E3FCEF; color: #006644; }
+  .st-progress { background: #DEEBFF; color: #0747A6; }
+  .st-review { background: #EAE6FF; color: #403294; }
+  .st-todo { background: #F4F5F7; color: #42526E; }
+  .st-idea { background: #FFFAE6; color: #974F0C; }
+
+  /* ─── E value mini-bar ─── */
+  .e-wrap { display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .e-minibar { height: 4px; background: #DFE1E6; border-radius: 2px; width: 40px; overflow: hidden; }
+  .e-minibar-fill { height: 100%; border-radius: 2px; background: #0052CC; }
+
+  /* ─── FOOTER TOTALS ─── */
+  .totals {
+    background: #172B4D;
+    color: #fff;
+    padding: 40px;
+  }
+  .totals-inner { max-width: 1000px; }
+  .totals h2 { font-size: 20px; font-weight: 700; margin-bottom: 28px; }
+  .totals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px; }
+  .tc {
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 20px;
+  }
+  .tc-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+  .tc-val { font-size: 48px; font-weight: 300; line-height: 1; color: #79E2F2; }
+  .tc-unit { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+  .totals-note { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 12px; color: rgba(255,255,255,0.5); line-height: 2; }
+  .totals-note b { color: #79E2F2; }
+
+  @media (max-width: 768px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .totals-grid { grid-template-columns: 1fr; }
+    .hdr, .epics-section, .tables-wrap, .totals { padding: 20px; }
+    .formula-bar { padding: 16px 20px; gap: 24px; }
+    .epic-pill { width: 90px; font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-jira-icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M11.75 2L3 10.75l3.5 3.5L11.75 9l5.25 5.25L20.5 10.75 11.75 2Z" fill="#0052CC"/>
+      <path d="M11.75 22l8.75-8.75-3.5-3.5-5.25 5.25L6.5 9.75 3 13.25 11.75 22Z" fill="#2684FF"/>
+    </svg>
+  </div>
+  <div class="hdr-text">
+    <h1>Kiss My Flowers — PERT Estimation</h1>
+    <p>Оцінка 64 задач по SCRUM-тікетах Jira. Метод трьох точок (PERT): E = (O + 4M + P) / 6.
+    Структура відповідає епікам проекту <b>home work 7.1</b>.</p>
+    <div class="hdr-badges">
+      <div class="badge">DESIGN—ДИ</div>
+      <div class="badge">CORE—ЯДР</div>
+      <div class="badge">SHOP—МАГ</div>
+      <div class="badge">OPS—ОПЕР</div>
+      <div class="badge">ADMIN—П</div>
+      <div class="badge">AI—ИИ АГЕ</div>
+      <div class="badge">TEST—ТЕС</div>
+      <div class="badge">SEO—ПОИ</div>
+      <div class="badge">GTM—ЗАП</div>
+    </div>
+  </div>
+</div>
+
+<!-- FORMULA BAR -->
+<div class="formula-bar">
+  <div class="f-item">
+    <div class="f-label">Формула</div>
+    <div class="f-formula"><span class="accent">E</span> = (O + 4M + P) / 6</div>
+  </div>
+  <div class="f-item">
+    <div class="f-label">SD</div>
+    <div class="f-formula"><span class="accent">σ</span> = (P − O) / 6</div>
+  </div>
+  <div class="f-item">
+    <div class="f-label">Діапазон на задачу</div>
+    <div class="f-formula" style="color:#79E2F2">4.3 – 16.0 год</div>
+  </div>
+  <div class="f-item">
+    <div class="f-label">Умова ДЗ</div>
+    <div class="f-formula" style="color:#79E2F2">4 ≤ E ≤ 24 год ✓</div>
+  </div>
+</div>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="metric-card">
+    <div class="metric-val">540.8</div>
+    <div class="metric-unit">годин</div>
+    <div class="metric-lbl">Загальна оцінка</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-val">64</div>
+    <div class="metric-unit">SCRUM-тікети</div>
+    <div class="metric-lbl">Всього задач</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-val">67.6</div>
+    <div class="metric-unit">людино-днів (8 год)</div>
+    <div class="metric-lbl">В робочих днях</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-val">3.4</div>
+    <div class="metric-unit">місяці (20 днів/міс)</div>
+    <div class="metric-lbl">Тривалість проекту</div>
+  </div>
+</div>
+
+<!-- EPIC BARS -->
+<div class="epics-section">
+  <div class="section-hdr">Розподіл за Jira Epics</div>
+  <div class="epic-rows">
+    <div class="epic-row">
+      <div class="epic-pill design-pill">DESIGN—ДИ</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill design-bar" style="width:12.8%"><span>12.8%</span></div></div>
+      <div class="epic-h">69.5 год</div>
+      <div class="epic-n">9 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill core-pill">CORE—ЯДР</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill core-bar" style="width:12%"><span>12.0%</span></div></div>
+      <div class="epic-h">65.0 год</div>
+      <div class="epic-n">9 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill shop-pill">SHOP—МАГ</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill shop-bar" style="width:16%"><span>16.0%</span></div></div>
+      <div class="epic-h">86.7 год</div>
+      <div class="epic-n">11 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill ops-pill">OPS—ОПЕР</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill ops-bar" style="width:18.1%"><span>18.1%</span></div></div>
+      <div class="epic-h">97.7 год</div>
+      <div class="epic-n">11 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill admin-pill">ADMIN—П</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill admin-bar" style="width:8%"><span>8.0%</span></div></div>
+      <div class="epic-h">43.2 год</div>
+      <div class="epic-n">5 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill ai-pill">AI—ИИ АГЕ</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill ai-bar" style="width:13.9%"><span>13.9%</span></div></div>
+      <div class="epic-h">75.3 год</div>
+      <div class="epic-n">6 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill test-pill">TEST—ТЕС</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill test-bar" style="width:9.9%"><span>9.9%</span></div></div>
+      <div class="epic-h">53.4 год</div>
+      <div class="epic-n">5 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill seo-pill">SEO—ПОИ</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill seo-bar" style="width:5.2%"><span>5.2%</span></div></div>
+      <div class="epic-h">28.3 год</div>
+      <div class="epic-n">5 задач</div>
+    </div>
+    <div class="epic-row">
+      <div class="epic-pill gtm-pill">GTM—ЗАП</div>
+      <div class="epic-bar-track"><div class="epic-bar-fill gtm-bar" style="width:4%"><span>4.0%</span></div></div>
+      <div class="epic-h">21.7 год</div>
+      <div class="epic-n">3 задачі</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILED TABLES -->
+<div class="tables-wrap">
+
+  <!-- DESIGN -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#FF8B00">
+      <div class="e-name">DESIGN — ДИ &nbsp; Дизайн та Figma</div>
+      <div class="e-count">9 задач</div>
+      <div class="e-total">69.5 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-56</a></td><td>Figma: Карточка товару — фото + ціна EUR/BGN + тег + hover quick-add</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-57</a></td><td>Figma: Головна сторінка / Storefront — hero + банер + каталог-сітка</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-58</a></td><td>Figma: Сторінка каталогу + chip-фільтри + порожній стан</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-59</a></td><td>Figma: Checkout flow — 5 кроків + progress bar + валідація</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-60</a></td><td>Figma: Admin Dashboard — таблиця замовлень + фільтри + статуси</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-61</a></td><td>Figma: Сторінка успіху після оплати — підтвердження + деталі</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-62</a></td><td>Figma: Мобільна версія (адаптив 375px) — всі сторінки</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-review">IN REVIEW</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-63</a></td><td>Figma: Hub Dashboard — Realtime статуси + кольорова пріоритизація</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-64</a></td><td>Design System — палітра + типографіка + компоненти (Button / Input / Card)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-e">6.3</td><td class="td-sd">1.0</td><td><span class="st st-todo">TO DO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CORE -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#0052CC">
+      <div class="e-name">CORE — ЯДР &nbsp; Ядро та Інфраструктура</div>
+      <div class="e-count">9 задач</div>
+      <div class="e-total">65.0 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-01</a></td><td>Вибір технічного стеку (Next.js 16 + Supabase + Tailwind v4 + TypeScript)</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-02</a></td><td>Налаштування репозиторію + GitHub Actions CI (tsc + vitest + next build)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-03</a></td><td>Проектування схеми БД — 8 таблиць + RLS + pgvector extension</td><td class="td-num">6</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">9.0</td><td class="td-sd">1.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-04</a></td><td>Supabase міграції 01–05 (products / orders / hubs / couriers / users)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-05</a></td><td>Supabase міграції 06–10 (agent_reports / knowledge_documents / namedays)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-e">6.3</td><td class="td-sd">1.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-06</a></td><td>PIN аутентифікація (crypto.timingSafeEqual) + rate limit 5 спроб / 15 хвилин</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-07</a></td><td>Middleware — захист маршрутів /admin/* та /hub/* (httpOnly cookie)</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-31</a></td><td>Налаштування домену kissmyflowers.bg + DNS записи → Vercel + SSL</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-review">IN REVIEW</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-35</a></td><td>Supabase: створити production проект + застосувати всі 10 міграцій</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-progress">IN PROGRESS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SHOP -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#00875A">
+      <div class="e-name">SHOP — МАГ &nbsp; Магазин та Клієнтська частина</div>
+      <div class="e-count">11 задач</div>
+      <div class="e-total">86.7 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-08</a></td><td>Storefront / каталог — ProductCard + EUR/BGN подвійне ціноутворення</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-09</a></td><td>Фільтрація за тегами (Бестселлер / Сезонний / Преміум) — chip-фільтри</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-10</a></td><td>AI Finder — 2-кроковий wizard (6 отримувачів × 5 приводів = 30 комбінацій)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-11</a></td><td>Checkout Step 1–2: вибір букета + адреса + зона доставки (Haversine)</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-12</a></td><td>Checkout Step 3–4: дата / час доставки + контактні дані клієнта</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-13</a></td><td>Checkout Step 5: підсумок + валідація isOddFlowerCount + перехід до Stripe</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-14</a></td><td>Stripe Checkout Session (server-side, PCI-DSS compliant)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-15</a></td><td>Stripe Webhook обробник — idempotency key + автозапуск маршрутизації</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-16</a></td><td>Сторінка Success після оплати — деталі замовлення + очікуваний час</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-17</a></td><td>PWA — manifest.json + Service Worker + offline кеш + Install Banner</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-34</a></td><td>Stripe: переключення з test keys на live keys + оновлення webhook URL</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-e">4.3</td><td class="td-sd">0.3</td><td><span class="st st-todo">TO DO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPS -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#BF2600">
+      <div class="e-name">OPS — ОПЕР &nbsp; Операції / WhatsApp / Dispatch</div>
+      <div class="e-count">11 задач</div>
+      <div class="e-total">97.7 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-18</a></td><td>WhatsApp Cloud API — lib/whatsapp.ts (sendText + sendInteractive + sendMedia)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-19</a></td><td>Алгоритм маршрутизації Hub (Haversine + сортування хабів за відстанню)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-20</a></td><td>WA повідомлення флористу — склад + адреса + час + кнопки Accept/Reject</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-21</a></td><td>Таймаут 5 хвилин + автопереключення замовлення на наступний Hub</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-22</a></td><td>Broadcast dispatch кур'єрам — first-wins атомарний запис (race condition)</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-23</a></td><td>WhatsApp медіа webhook — прийом фото від кур'єра + валідація</td><td class="td-num">6</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">9.0</td><td class="td-sd">1.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-24</a></td><td>Фото → Supabase Storage + автозміна статусу delivered + WA клієнту</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-25</a></td><td>Cron nameday-reminders — щоденно о 09:00 + WA з іменинниками</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-26</a></td><td>Cron dispatch-timeout — ескалація прострочених замовлень кожні 2 хвилини</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-32</a></td><td>Meta Developer: реєстрація + WhatsApp Business верифікація акаунту</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-progress">IN PROGRESS</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-33</a></td><td>WhatsApp: подача 8 шаблонів повідомлень на approval Meta (24-48 год)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">20</td><td class="td-e">9.3</td><td class="td-sd">2.7</td><td><span class="st st-todo">TO DO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#6554C0">
+      <div class="e-name">ADMIN — П &nbsp; Адмін Панель</div>
+      <div class="e-count">5 задач</div>
+      <div class="e-total">43.2 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-27</a></td><td>Admin Dashboard — таблиця замовлень + фільтри (статус/хаб/дата) + Realtime</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-28</a></td><td>Admin — ручна зміна статусу замовлення + переназначення кур'єра</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-29</a></td><td>Escalation alert — needs_attention статус + виділення в дашборді</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-e">4.7</td><td class="td-sd">0.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-38</a></td><td>CRUD каталогу + завантаження фото (Supabase Storage) + soft-delete</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-37</a></td><td>Перегляд AI-звітів в панелі Admin (agent_reports з фільтрацією по типу)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-todo">TO DO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AI -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#00B8D9">
+      <div class="e-name">AI — ИИ АГЕ &nbsp; AI Агенти RAG</div>
+      <div class="e-count">6 задач</div>
+      <div class="e-total">75.3 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-30</a></td><td>Інструменти агентів — getFinancialSummary + getCourierEarnings + getHubPerformance + getOrderMetrics</td><td class="td-num">8</td><td class="td-num">12</td><td class="td-num">24</td><td class="td-e">13.3</td><td class="td-sd">2.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-41</a></td><td>Агент-бухгалтер — Claude claude-opus-4-8 + tool-use loop + болгарські податки + WA</td><td class="td-num">8</td><td class="td-num">14</td><td class="td-num">24</td><td class="td-e">14.7</td><td class="td-sd">2.7</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-42</a></td><td>Агент-юрист — аналіз ЕООД/ЄТ/ГД структур + оптимізація податкового навантаження</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-num">24</td><td class="td-e">13.0</td><td class="td-sd">3.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-43</a></td><td>Агент-маркетолог — метрики конверсії + топ-продукти + A/B ідеї + сезонний аналіз</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-num">20</td><td class="td-e">12.3</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-44</a></td><td>Cron jobs для 3 агентів (1-го/15-го/щопонеділка) + збереження agent_reports</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-36</a></td><td>Заповнити knowledge_documents (20+ документів: ЗКПО / ЗДДС / КТ / маркетинг)</td><td class="td-num">8</td><td class="td-num">12</td><td class="td-num">24</td><td class="td-e">13.3</td><td class="td-sd">2.7</td><td><span class="st st-progress">IN PROGRESS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TEST -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#FF5630">
+      <div class="e-name">TEST — ТЕС &nbsp; Тестування та QA</div>
+      <div class="e-count">5 задач</div>
+      <div class="e-total">53.4 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-45</a></td><td>Unit тести Vitest — isOddFlowerCount + EUR↔BGN + Haversine + hub routing (16 тестів)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-47</a></td><td>Integration тест — POST /api/orders: повний flow від payload до pending_hub</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-48</a></td><td>Integration тест — Stripe webhook idempotency (дублікат не створює другий ордер)</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-num">20</td><td class="td-e">11.0</td><td class="td-sd">2.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-49</a></td><td>Integration тест — WhatsApp webhook routing (hub_accept / hub_reject / courier_accept)</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-40</a></td><td>E2E Playwright — checkout → Stripe → Hub WA → Dashboard → Courier → фото → delivered</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-num">24</td><td class="td-e">16.0</td><td class="td-sd">2.7</td><td><span class="st st-todo">TO DO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SEO -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#36B37E">
+      <div class="e-name">SEO — ПОИ &nbsp; SEO та Контент</div>
+      <div class="e-count">5 задач</div>
+      <div class="e-total">28.3 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-50</a></td><td>Метадані + Open Graph + Schema.org LocalBusiness (Бургас) — всі сторінки</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-51</a></td><td>Sitemap.xml + robots.txt (автогенерація Next.js App Router)</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-e">4.3</td><td class="td-sd">0.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-53</a></td><td>Сторінки Privacy Policy + Terms of Service + Cookie Consent (GDPR)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-done">DONE</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-39</a></td><td>Google Business Profile — реєстрація + верифікація (Бургас локальний SEO)</td><td class="td-num">4</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-e">4.3</td><td class="td-sd">0.3</td><td><span class="st st-idea">IDEA</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-52</a></td><td>Підготовити контент для Instagram / соцмережі (фото + тексти + хештеги)</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">10</td><td class="td-e">6.3</td><td class="td-sd">1.0</td><td><span class="st st-idea">IDEA</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GTM -->
+  <div class="epic-block">
+    <div class="epic-block-header" style="background:#253858">
+      <div class="e-name">GTM — ЗАП &nbsp; Go-to-Market / Запуск</div>
+      <div class="e-count">3 задачі</div>
+      <div class="e-total">21.7 год</div>
+    </div>
+    <table>
+      <thead><tr><th>SCRUM ID</th><th>Назва задачі</th><th class="num">O</th><th class="num">M</th><th class="num">P</th><th class="num">E (год)</th><th class="num">SD</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td class="td-id"><a>SCRUM-54</a></td><td>Go-live checklist — пройти всі 7 воріт безпеки + smoke test на staging</td><td class="td-num">4</td><td class="td-num">8</td><td class="td-num">16</td><td class="td-e">8.7</td><td class="td-sd">2.0</td><td><span class="st st-todo">TO DO</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-46</a></td><td>Підключити перший Hub — зустріч з флористом + навчання + тест flow</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-idea">IDEA</span></td></tr>
+        <tr><td class="td-id"><a>SCRUM-55</a></td><td>Onboarding кур'єрів — 3-5 осіб + тест broadcast dispatch + інструкція</td><td class="td-num">4</td><td class="td-num">6</td><td class="td-num">12</td><td class="td-e">6.7</td><td class="td-sd">1.3</td><td><span class="st st-idea">IDEA</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- TOTALS -->
+<div class="totals">
+  <div class="totals-inner">
+    <h2>Фінальна оцінка проекту (PERT)</h2>
+    <div class="totals-grid">
+      <div class="tc">
+        <div class="tc-lbl">Загальна оцінка</div>
+        <div class="tc-val">540.8</div>
+        <div class="tc-unit">годин · 64 SCRUM-тікети</div>
+      </div>
+      <div class="tc">
+        <div class="tc-lbl">Людино-дні (8 год/день)</div>
+        <div class="tc-val">67.6</div>
+        <div class="tc-unit">робочих днів</div>
+      </div>
+      <div class="tc">
+        <div class="tc-lbl">Тривалість (20 днів/міс)</div>
+        <div class="tc-val">3.4</div>
+        <div class="tc-unit">місяці розробки</div>
+      </div>
+    </div>
+    <div class="totals-note">
+      <b>Метод:</b> Three-Point Estimation (PERT) · E = (O + 4M + P) / 6 &nbsp;|&nbsp;
+      <b>Діапазон:</b> 4.3 – 16.0 год/задача (умова ДЗ: 4–24 год ✓) &nbsp;|&nbsp;
+      <b>Найбільший епік:</b> OPS—ОПЕР — 97.7 год (WhatsApp + dispatch + Meta approval) &nbsp;|&nbsp;
+      <b>Найскладніша задача:</b> SCRUM-40 E2E Playwright — 16.0 год (SD=2.7) &nbsp;|&nbsp;
+      <b>Статуси в Jira:</b> DONE (виконано) · IN PROGRESS · IN REVIEW · TO DO · IDEA (backlog)
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

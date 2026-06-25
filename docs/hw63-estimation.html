@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HW 6.3 — Оцінка проекту Kiss My Flowers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: #FAFAFA;
+    color: #1A1A1A;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ─── HEADER ─── */
+  .page-header {
+    background: #0A0A0A;
+    color: #fff;
+    padding: 48px 40px 36px;
+  }
+  .page-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 38px;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    color: #aaa;
+    font-size: 13px;
+    max-width: 680px;
+  }
+  .method-badge {
+    display: inline-block;
+    margin-top: 16px;
+    background: #fff;
+    color: #0A0A0A;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ─── FORMULA BOX ─── */
+  .formula-section {
+    background: #1A1A1A;
+    color: #fff;
+    padding: 28px 40px;
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .formula-block { }
+  .formula-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 6px; }
+  .formula {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #fff;
+  }
+  .formula span { color: #C8A96E; }
+  .legend { display: flex; flex-direction: column; gap: 4px; }
+  .legend-item { font-size: 12px; color: #ccc; }
+  .legend-item b { color: #C8A96E; }
+
+  /* ─── SUMMARY CARDS ─── */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: #E8E8E8;
+    border-bottom: 1px solid #E8E8E8;
+  }
+  .summary-card {
+    background: #fff;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .summary-card .value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1;
+    color: #0A0A0A;
+  }
+  .summary-card .unit {
+    font-size: 14px;
+    color: #767676;
+    margin-top: 4px;
+  }
+  .summary-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #aaa;
+    margin-top: 8px;
+  }
+
+  /* ─── PHASE SUMMARY ─── */
+  .phases-section {
+    padding: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #E8E8E8;
+  }
+  .phase-bars { display: flex; flex-direction: column; gap: 10px; margin-bottom: 48px; }
+  .phase-row { display: flex; align-items: center; gap: 12px; }
+  .phase-name { width: 240px; font-size: 12px; color: #1A1A1A; flex-shrink: 0; }
+  .phase-bar-wrap { flex: 1; background: #F0F0F0; height: 28px; position: relative; }
+  .phase-bar {
+    height: 100%;
+    background: #0A0A0A;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    transition: width 0.3s;
+  }
+  .phase-bar .bar-label { font-size: 11px; color: #fff; font-weight: 600; white-space: nowrap; }
+  .phase-hours { width: 80px; text-align: right; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .phase-pct { width: 40px; text-align: right; font-size: 11px; color: #767676; flex-shrink: 0; }
+
+  /* ─── DETAILED TABLE ─── */
+  .detail-section {
+    padding: 0 40px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .phase-group { margin-bottom: 40px; }
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 0 10px;
+    border-bottom: 2px solid #0A0A0A;
+    margin-bottom: 0;
+  }
+  .phase-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: #E8E8E8;
+    line-height: 1;
+  }
+  .phase-title { font-weight: 600; font-size: 14px; letter-spacing: 0.03em; }
+  .phase-subtotal { margin-left: auto; font-size: 13px; color: #767676; }
+  .phase-subtotal b { color: #0A0A0A; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: #F5F5F5;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #767676;
+    font-weight: 600;
+    border-bottom: 1px solid #E8E8E8;
+  }
+  thead th:nth-child(n+3) { text-align: center; }
+  tbody tr { border-bottom: 1px solid #F0F0F0; }
+  tbody tr:hover { background: #FAFAFA; }
+  tbody td { padding: 10px 12px; font-size: 12.5px; vertical-align: middle; }
+  tbody td:nth-child(1) { color: #767676; font-size: 11px; width: 70px; }
+  tbody td:nth-child(3),
+  tbody td:nth-child(4),
+  tbody td:nth-child(5) { text-align: center; color: #767676; width: 70px; }
+  tbody td:nth-child(6) {
+    text-align: center;
+    font-weight: 700;
+    width: 80px;
+    color: #0A0A0A;
+  }
+  tbody td:nth-child(7) { text-align: center; color: #aaa; font-size: 11px; width: 60px; }
+  .e-cell { position: relative; }
+  .e-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    background: #0A0A0A;
+    opacity: 0.15;
+  }
+
+  /* ─── TOTALS ─── */
+  .totals-section {
+    background: #0A0A0A;
+    color: #fff;
+    padding: 48px 40px;
+    margin-top: 0;
+  }
+  .totals-inner { max-width: 1020px; margin: 0 auto; }
+  .totals-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 32px;
+    color: #fff;
+  }
+  .totals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .total-card { padding: 24px; border: 1px solid #333; }
+  .total-card .tc-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 12px; }
+  .total-card .tc-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    line-height: 1;
+    color: #C8A96E;
+  }
+  .total-card .tc-unit { font-size: 14px; color: #888; margin-top: 6px; }
+  .totals-note {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #333;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.8;
+  }
+  .totals-note b { color: #C8A96E; }
+
+  @media (max-width: 768px) {
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .totals-grid { grid-template-columns: 1fr; }
+    .phases-section, .detail-section { padding: 24px 20px; }
+    .phase-name { width: 160px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <h1>Kiss My Flowers — Оцінка проекту</h1>
+  <p>Оцінка всіх вимог за методом трьох точок (PERT). Охоплює 72 user stories та технічних задачі,
+  розбитих на 9 фаз розробки — від ініціалізації до production deploy.</p>
+  <div class="method-badge">Метод: Three-Point Estimation (PERT)</div>
+</header>
+
+<!-- FORMULA -->
+<div class="formula-section">
+  <div class="formula-block">
+    <div class="formula-label">Формула розрахунку</div>
+    <div class="formula"><span>E</span> = (O + 4M + P) / 6</div>
+  </div>
+  <div class="formula-block">
+    <div class="formula-label">Стандартне відхилення</div>
+    <div class="formula"><span>SD</span> = (P − O) / 6</div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><b>O</b> — Optimistic (найкращий сценарій)</div>
+    <div class="legend-item"><b>M</b> — Most Likely (найімовірніший)</div>
+    <div class="legend-item"><b>P</b> — Pessimistic (найгірший сценарій)</div>
+    <div class="legend-item"><b>E</b> — Expected (фінальна оцінка в годинах)</div>
+  </div>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div class="summary-row">
+  <div class="summary-card">
+    <div class="value">560.5</div>
+    <div class="unit">годин</div>
+    <div class="label">Загальна оцінка</div>
+  </div>
+  <div class="summary-card">
+    <div class="value">72</div>
+    <div class="unit">user stories / задачі</div>
+    <div class="label">Усього одиниць оцінки</div>
+  </div>
+  <div class="summary-card">
+    <div class="value">70.1</div>
+    <div class="unit">людино-днів (8 год)</div>
+    <div class="label">В днях розробки</div>
+  </div>
+  <div class="summary-card">
+    <div class="value">3.5</div>
+    <div class="unit">місяці (20 роб. днів)</div>
+    <div class="label">Тривалість проекту</div>
+  </div>
+</div>
+
+<!-- PHASE BARS -->
+<div class="phases-section">
+  <h2 class="section-title">Розподіл за фазами</h2>
+  <div class="phase-bars">
+    <div class="phase-row">
+      <div class="phase-name">1. Ініціалізація</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:9.5%"><span class="bar-label">9.5%</span></div></div>
+      <div class="phase-hours">53.1 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">2. Клієнтська частина</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:24%"><span class="bar-label">24.0%</span></div></div>
+      <div class="phase-hours">134.4 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">3. Флорист / Hub</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:8.3%"><span class="bar-label">8.3%</span></div></div>
+      <div class="phase-hours">46.4 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">4. Кур'єр</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:8.6%"><span class="bar-label">8.6%</span></div></div>
+      <div class="phase-hours">48.3 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">5. Адміністратор</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:13.3%"><span class="bar-label">13.3%</span></div></div>
+      <div class="phase-hours">74.8 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">6. AI Агенти (RAG)</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:13.4%"><span class="bar-label">13.4%</span></div></div>
+      <div class="phase-hours">75.3 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">7. SEO та Юридичні</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:3.2%"></div></div>
+      <div class="phase-hours">17.7 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">8. Тестування і QA</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:11.4%"><span class="bar-label">11.4%</span></div></div>
+      <div class="phase-hours">63.8 год</div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-name">9. Деплой та запуск</div>
+      <div class="phase-bar-wrap"><div class="phase-bar" style="width:8.3%"><span class="bar-label">8.3%</span></div></div>
+      <div class="phase-hours">46.7 год</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILED TABLES -->
+<div class="detail-section">
+
+  <!-- PHASE 1 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">01</div>
+      <div class="phase-title">ІНІЦІАЛІЗАЦІЯ ТА ІНФРАСТРУКТУРА</div>
+      <div class="phase-subtotal">Підсумок: <b>53.1 год</b> (8 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>TF-01</td><td>Налаштування проекту (Next.js 16 + Supabase + Tailwind v4 + TypeScript конфіг)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>TF-02</td><td>Проектування схеми БД — 8 таблиць + RLS політики + pgvector extension</td><td>6</td><td>8</td><td>16</td><td>9.0</td><td>1.7</td></tr>
+        <tr><td>TF-03</td><td>Supabase міграції 01–05 (products / orders / hubs / couriers / users)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>TF-04</td><td>Supabase міграції 06–10 (agent_reports / knowledge_documents / namedays)</td><td>4</td><td>6</td><td>10</td><td>6.3</td><td>1.0</td></tr>
+        <tr><td>TF-05</td><td>Налаштування .env.local — всі змінні середовища + .env.example</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>TF-06</td><td>GitHub Actions CI pipeline — tsc + vitest + next build на кожен PR</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>TF-07</td><td>PIN аутентифікація (crypto.timingSafeEqual) + rate limit 5 спроб / 15 хвилин</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>TF-08</td><td>Middleware — захист маршрутів /admin/* та /hub/* (httpOnly cookie)</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">02</div>
+      <div class="phase-title">КЛІЄНТСЬКА ЧАСТИНА (CUSTOMER)</div>
+      <div class="phase-subtotal">Підсумок: <b>134.4 год</b> (21 задача)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>US-01a</td><td>Компонент ProductCard — фото + назва + тег + EUR/BGN ціна одночасно</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-01b</td><td>Сторінка каталогу / storefront — список букетів + завантаження &lt; 2с на 3G</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-01c</td><td>Фільтрація за тегами (Бестселлер / Сезонний / Преміум) — chip-фільтри</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-01d</td><td>Логіка подвійного ціноутворення EUR+BGN (курс 1.95583, до 08.08.2026)</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>US-02a</td><td>AI Finder Step 1 — вибір отримувача (6 варіантів: мама / партнер / друг…)</td><td>4</td><td>6</td><td>10</td><td>6.3</td><td>1.0</td></tr>
+        <tr><td>US-02b</td><td>AI Finder Step 2 — вибір приводу (5 варіантів: ДН / закоханість / вибачення…)</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-02c</td><td>Матриця рекомендацій (30 комбінацій) + результат з поясненням + кнопка Замовити</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-03a</td><td>Checkout Step 1–2: вибір букета + адреса доставки + валідація зони (Haversine)</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-03b</td><td>Checkout Step 3–4: вибір дати/часу + контактні дані клієнта</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-03c</td><td>Checkout Step 5: підсумок + валідація непарних квітів + перехід до Stripe</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-04a</td><td>Stripe Checkout Session (server-side) — PCI-DSS compliant</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-04b</td><td>Stripe Webhook обробник — idempotency key + автоматичне призначення хабу після оплати</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-04c</td><td>Сторінка Success після оплати — деталі замовлення + очікуваний час доставки</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-05a</td><td>WhatsApp шаблон: підтвердження замовлення (&lt; 30 с після оплати)</td><td>4</td><td>5</td><td>10</td><td>5.7</td><td>1.0</td></tr>
+        <tr><td>US-05b</td><td>WhatsApp шаблон: кур'єр у дорозі (ім'я + очікуваний час)</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-05c</td><td>WhatsApp шаблон: доставлено — текст + фото підтвердження</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-11a</td><td>Форма збереження іменинників клієнта в БД (ім'я + дата)</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-11b</td><td>Cron-job nameday-reminders — щоденно о 09:00 + WA з іменем + кнопкою Замовити</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-15a</td><td>PWA manifest.json — іконки + назва + кольори + display: standalone</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>US-15b</td><td>Service Worker + кеш каталогу (offline-first для повторних відвідувань)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-15c</td><td>Банер Install App — показується після 2-го відвідування (localStorage лічильник)</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">03</div>
+      <div class="phase-title">ФЛОРИСТ / HUB</div>
+      <div class="phase-subtotal">Підсумок: <b>46.4 год</b> (5 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>US-06a</td><td>WhatsApp повідомлення флористу — склад + адреса + час + кнопки Accept/Reject</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-06b</td><td>Логіка 5-хвилинного таймауту + автопереключення замовлення на наступний хаб</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-06c</td><td>Алгоритм маршрутизації (Haversine + сортування хабів за відстанню) — lib/order-routing.ts</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-12a</td><td>Hub дашборд — Supabase Realtime підписка + відображення замовлень без перезавантаження</td><td>8</td><td>12</td><td>24</td><td>13.3</td><td>2.7</td></tr>
+        <tr><td>US-12b</td><td>Кольорова пріоритизація статусів замовлень в Hub дашборді (pending / accepted / dispatched)</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">04</div>
+      <div class="phase-title">КУР'ЄР</div>
+      <div class="phase-subtotal">Підсумок: <b>48.3 год</b> (6 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>US-07a</td><td>Broadcast dispatch — одночасна відправка WA всім кур'єрам зони</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-07b</td><td>First-wins атомарний запис (захист від race condition при одночасному прийнятті)</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-07c</td><td>Зворотний зв'язок "Вже зайнято" — WA відповідь відхиленим кур'єрам</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>US-08a</td><td>WhatsApp webhook — прийом медіа (фото) від кур'єра</td><td>6</td><td>8</td><td>16</td><td>9.0</td><td>1.7</td></tr>
+        <tr><td>US-08b</td><td>Збереження фото доставки в Supabase Storage (bucket + прив'язка до замовлення)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-08c</td><td>Автозміна статусу на delivered + WA клієнту з фото (&lt; 1 хвилини)</td><td>4</td><td>6</td><td>10</td><td>6.3</td><td>1.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">05</div>
+      <div class="phase-title">АДМІНІСТРАТОР</div>
+      <div class="phase-subtotal">Підсумок: <b>74.8 год</b> (9 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>US-09a</td><td>Таблиця замовлень з фільтрами — статус / хаб / дата + пошук по ID</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-09b</td><td>Realtime оновлення Admin дашборду без перезавантаження (Supabase Realtime)</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-09c</td><td>Ручна зміна статусу замовлення + переназначення кур'єра вручну</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>US-10a</td><td>Список продуктів каталогу з active/inactive тоглом (soft-delete: active=false)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-10b</td><td>Форма додавання/редагування букета — назва + ціна + теги + валідація непарних квітів</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-10c</td><td>Завантаження фото товару в Supabase Storage — JPEG/PNG/WebP макс 5 МБ + preview</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>US-13a</td><td>Cron dispatch-timeout — перевірка прострочених замовлень кожні 2 хвилини</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>US-13b</td><td>WhatsApp сповіщення адміну — ID замовлення + адреса + кількість спроб хабів</td><td>4</td><td>6</td><td>10</td><td>6.3</td><td>1.0</td></tr>
+        <tr><td>US-13c</td><td>Статус needs_attention + кольорове виділення в Admin дашборді</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">06</div>
+      <div class="phase-title">AI АГЕНТИ (RAG)</div>
+      <div class="phase-subtotal">Підсумок: <b>75.3 год</b> (6 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>US-14a</td><td>Інструменти агентів — getFinancialSummary + getCourierEarnings + getHubPerformance + getOrderMetrics</td><td>8</td><td>12</td><td>24</td><td>13.3</td><td>2.7</td></tr>
+        <tr><td>US-14b</td><td>Агент-бухгалтер — Claude claude-opus-4-8 + tool-use loop + болгарські податки + звіт + WA</td><td>8</td><td>14</td><td>24</td><td>14.7</td><td>2.7</td></tr>
+        <tr><td>US-14c</td><td>Агент-юрист — Claude claude-opus-4-8 + аналіз структури ЕООД/ЄТ + правові рекомендації</td><td>6</td><td>12</td><td>24</td><td>13.0</td><td>3.0</td></tr>
+        <tr><td>US-14d</td><td>Агент-маркетолог — Claude claude-opus-4-8 + метрики конверсії + топ-продукти + A/B ідеї</td><td>6</td><td>12</td><td>20</td><td>12.3</td><td>2.3</td></tr>
+        <tr><td>US-14e</td><td>pgvector RAG база знань — embedding setup + наповнення knowledge_documents (20+ документів)</td><td>8</td><td>12</td><td>24</td><td>13.3</td><td>2.7</td></tr>
+        <tr><td>US-14f</td><td>Cron jobs для 3 агентів (1-го/15-го/щопонеділка) + збереження agent_reports + WA адміну</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 7 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">07</div>
+      <div class="phase-title">SEO ТА ЮРИДИЧНІ СТОРІНКИ</div>
+      <div class="phase-subtotal">Підсумок: <b>17.7 год</b> (3 задачі)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>SEO-01</td><td>Метадані + Open Graph + Schema.org LocalBusiness (Бургас) — всі сторінки</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>SEO-02</td><td>Sitemap.xml + robots.txt (автогенерація Next.js)</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>LEGAL-01</td><td>Сторінки Privacy Policy + Terms of Service + Cookies Banner (GDPR-compliant)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 8 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">08</div>
+      <div class="phase-title">ТЕСТУВАННЯ І QA</div>
+      <div class="phase-subtotal">Підсумок: <b>63.8 год</b> (7 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>QA-01</td><td>Unit тести — isOddFlowerCount (парна/непарна) + EUR↔BGN конвертація (курс 1.95583)</td><td>4</td><td>5</td><td>10</td><td>5.7</td><td>1.0</td></tr>
+        <tr><td>QA-02</td><td>Unit тести — Haversine відстань (geo.ts) + hub routing logic (3 зони Бургаса)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>QA-03</td><td>Unit тести — форматування дат (іменини) + рядки WhatsApp шаблонів</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>QA-04</td><td>Integration тест — POST /api/orders: повний flow від payload до статусу pending_hub</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>QA-05</td><td>Integration тест — Stripe webhook idempotency (повторна доставка не створює другий ордер)</td><td>6</td><td>10</td><td>20</td><td>11.0</td><td>2.3</td></tr>
+        <tr><td>QA-06</td><td>Integration тест — WhatsApp webhook routing (hub_accept / hub_reject / courier_accept)</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>QA-07</td><td>E2E Playwright — checkout → Stripe → Hub WA → Hub Dashboard → Courier → фото → delivered</td><td>8</td><td>16</td><td>24</td><td>16.0</td><td>2.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHASE 9 -->
+  <div class="phase-group">
+    <div class="phase-header">
+      <div class="phase-num">09</div>
+      <div class="phase-title">ДЕПЛОЙ ТА ЗАПУСК</div>
+      <div class="phase-subtotal">Підсумок: <b>46.7 год</b> (7 задач)</div>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>User Story / Задача</th><th>O</th><th>M</th><th>P</th><th>E (год)</th><th>SD</th></tr></thead>
+      <tbody>
+        <tr><td>DEP-01</td><td>Vercel: підключити репозиторій + налаштувати всі ENV vars (production)</td><td>4</td><td>6</td><td>12</td><td>6.7</td><td>1.3</td></tr>
+        <tr><td>DEP-02</td><td>Домен kissmyflowers.bg → DNS записи → Vercel + SSL сертифікат автоматично</td><td>4</td><td>4</td><td>8</td><td>4.7</td><td>0.7</td></tr>
+        <tr><td>DEP-03</td><td>Supabase production проект (окремий від dev) + застосувати всі 10 міграцій</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+        <tr><td>DEP-04</td><td>Meta Business: реєстрація + подача 8 WhatsApp шаблонів на approval (24-48 год)</td><td>4</td><td>8</td><td>20</td><td>9.3</td><td>2.7</td></tr>
+        <tr><td>DEP-05</td><td>Stripe: переключення з test keys на live keys + оновлення webhook endpoint</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>DEP-06</td><td>Google Business Profile: реєстрація та верифікація (Бургас локальний SEO)</td><td>4</td><td>4</td><td>6</td><td>4.3</td><td>0.3</td></tr>
+        <tr><td>DEP-07</td><td>Go-live checklist: пройти всі 7 воріт + E2E smoke test на staging</td><td>4</td><td>8</td><td>16</td><td>8.7</td><td>2.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- TOTALS -->
+<div class="totals-section">
+  <div class="totals-inner">
+    <div class="totals-title">Фінальна оцінка проекту</div>
+    <div class="totals-grid">
+      <div class="total-card">
+        <div class="tc-label">Загальна оцінка (PERT)</div>
+        <div class="tc-value">560.5</div>
+        <div class="tc-unit">годин · 72 задачі</div>
+      </div>
+      <div class="total-card">
+        <div class="tc-label">Людино-дні (8 год/день)</div>
+        <div class="tc-value">70.1</div>
+        <div class="tc-unit">робочих днів</div>
+      </div>
+      <div class="total-card">
+        <div class="tc-label">Людино-місяці (20 днів/міс)</div>
+        <div class="tc-value">3.5</div>
+        <div class="tc-unit">місяці розробки</div>
+      </div>
+    </div>
+    <div class="totals-note">
+      <b>Метод:</b> Three-Point Estimation (PERT) — E = (O + 4M + P) / 6 &nbsp;|&nbsp;
+      <b>Діапазон на задачу:</b> 4.3 – 16.0 год (всі в межах 4–24 год) &nbsp;|&nbsp;
+      <b>Кількість фаз:</b> 9 &nbsp;|&nbsp;
+      <b>Найдовша фаза:</b> Клієнтська частина (134.4 год, 21 задача) &nbsp;|&nbsp;
+      <b>Найскладніша задача:</b> QA-07 E2E Playwright (16.0 год, SD=2.7) &nbsp;|&nbsp;
+      <b>AI Агенти:</b> 75.3 год (13.4% проекту) — найвища невизначеність через залежність від Meta/OpenAI API
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

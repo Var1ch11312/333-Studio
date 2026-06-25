@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoSCoW Пріоритизація — Kiss My Flowers</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #F7F8FA; color: #1A1A2E; font-size: 13.5px; line-height: 1.55; }
+
+  /* ─── HEADER ─── */
+  .hdr { background: #1A1A2E; color: #fff; padding: 40px 44px 32px; }
+  .hdr h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
+  .hdr p { color: rgba(255,255,255,0.6); margin-top: 6px; max-width: 680px; font-size: 13px; }
+  .hdr-sub { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .project-tag { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 100px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; }
+
+  /* ─── MOSCOW LEGEND ─── */
+  .legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: #E2E4EA; }
+  .leg-card { padding: 20px 24px; }
+  .leg-m { background: #FFF0F0; }
+  .leg-s { background: #FFF8E6; }
+  .leg-c { background: #F0F7FF; }
+  .leg-w { background: #F5F5F5; }
+  .leg-letter { font-size: 40px; font-weight: 900; line-height: 1; }
+  .m-col { color: #C0392B; }
+  .s-col { color: #E67E22; }
+  .c-col { color: #2980B9; }
+  .w-col { color: #7F8C8D; }
+  .leg-word { font-size: 13px; font-weight: 700; margin-top: 4px; }
+  .leg-desc { font-size: 11.5px; color: #555; margin-top: 6px; line-height: 1.45; }
+
+  /* ─── STATS ROW ─── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: #E2E4EA; }
+  .stat-card { background: #fff; padding: 20px 24px; text-align: center; }
+  .stat-val { font-size: 38px; font-weight: 300; line-height: 1; }
+  .stat-unit { font-size: 11px; color: #888; margin-top: 4px; }
+  .stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-top: 8px; }
+
+  /* ─── EFFORT BAR ─── */
+  .effort-section { padding: 28px 44px; background: #fff; border-bottom: 1px solid #E2E4EA; }
+  .effort-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-weight: 700; margin-bottom: 14px; }
+  .effort-bar { display: flex; height: 36px; border-radius: 4px; overflow: hidden; }
+  .eb-m { background: #E74C3C; flex: 180.3; display: flex; align-items: center; justify-content: center; }
+  .eb-s { background: #F39C12; flex: 94.9; display: flex; align-items: center; justify-content: center; }
+  .eb-c { background: #3498DB; flex: 101; display: flex; align-items: center; justify-content: center; }
+  .eb-w { background: #BDC3C7; flex: 120.9; display: flex; align-items: center; justify-content: center; }
+  .eb-label { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .effort-legend { display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap; }
+  .el-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #555; }
+  .el-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ─── FLOW DIAGRAM ─── */
+  .flow-section { padding: 32px 44px; background: #fff; border-bottom: 1px solid #E2E4EA; }
+  .flow-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-weight: 700; margin-bottom: 16px; }
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+  .flow-step {
+    background: #1A1A2E;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 11.5px;
+    font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    min-width: 100px; text-align: center;
+  }
+  .flow-step .fs-icon { font-size: 16px; }
+  .flow-step .fs-tag { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .flow-arrow { color: #E74C3C; font-size: 20px; font-weight: 900; padding: 0 4px; }
+  .mvp-note { margin-top: 14px; font-size: 12px; color: #555; }
+  .mvp-note b { color: #C0392B; }
+
+  /* ─── SECTIONS ─── */
+  .section { padding: 36px 44px; }
+  .section + .section { border-top: 6px solid #F0F0F0; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 0;
+  }
+  .sh-letter { font-size: 36px; font-weight: 900; line-height: 1; opacity: 0.9; }
+  .sh-info { flex: 1; }
+  .sh-title { font-size: 14px; font-weight: 700; color: #fff; }
+  .sh-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .sh-stats { display: flex; gap: 20px; }
+  .sh-stat { text-align: center; }
+  .sh-stat-val { font-size: 20px; font-weight: 700; color: #fff; line-height: 1; }
+  .sh-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+  .bg-m { background: #C0392B; }
+  .bg-s { background: #D68910; }
+  .bg-c { background: #2471A3; }
+  .bg-w { background: #717D7E; }
+
+  /* ─── TABLE ─── */
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 0 0 6px 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  thead th {
+    background: #F5F6FA;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888;
+    font-weight: 700;
+    border-bottom: 2px solid #E8E9EF;
+  }
+  th.c-center { text-align: center; }
+  tbody tr { border-bottom: 1px solid #F2F3F7; }
+  tbody tr:hover { background: #FAFBFD; }
+  tbody td { padding: 11px 14px; font-size: 12.5px; vertical-align: top; }
+
+  .td-id { width: 92px; }
+  .scrum-link {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+  }
+  .scrum-m { background: #FDEDEC; color: #C0392B; }
+  .scrum-s { background: #FEF9E7; color: #D68910; }
+  .scrum-c { background: #EBF5FB; color: #2471A3; }
+  .scrum-w { background: #F2F3F4; color: #717D7E; }
+
+  .td-epic { width: 100px; }
+  .epic-tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .epic-core { background: #D6EAF8; color: #1A5276; }
+  .epic-shop { background: #D5F5E3; color: #1D6A39; }
+  .epic-ops  { background: #FADBD8; color: #922B21; }
+  .epic-admin{ background: #E8DAEF; color: #6C3483; }
+  .epic-ai   { background: #D1F2EB; color: #0E6655; }
+  .epic-test { background: #FDEBD0; color: #7E5109; }
+  .epic-seo  { background: #D5F5E3; color: #1D6A39; }
+  .epic-gtm  { background: #D6EAF8; color: #1A5276; }
+  .epic-design{ background: #FEF9E7; color: #7D6608; }
+
+  .td-reason { color: #555; font-size: 12px; font-style: italic; }
+  .td-h { text-align: center; font-weight: 700; width: 65px; }
+  .td-mvp { text-align: center; width: 70px; }
+
+  /* ─── MVP BOX ─── */
+  .mvp-section {
+    background: #1A1A2E;
+    color: #fff;
+    padding: 40px 44px;
+  }
+  .mvp-title { font-size: 22px; font-weight: 700; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+  .mvp-badge { background: #E74C3C; padding: 4px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
+
+  .mvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+  .mvp-col h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+  .mvp-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12.5px; }
+  .mvp-item:last-child { border-bottom: none; }
+  .mvp-check { color: #2ECC71; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .mvp-cross { color: #E74C3C; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .mvp-txt { color: rgba(255,255,255,0.85); }
+
+  .mvp-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mm { border: 1px solid rgba(255,255,255,0.15); padding: 18px; border-radius: 4px; text-align: center; }
+  .mm-val { font-size: 40px; font-weight: 300; color: #E74C3C; line-height: 1; }
+  .mm-unit { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .mm-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); margin-top: 8px; }
+
+  /* ─── SPRINT PLAN ─── */
+  .sprints-section { padding: 36px 44px; background: #fff; }
+  .sprint-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-weight: 700; margin-bottom: 20px; }
+  .sprint-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .sprint-card { border: 2px solid #E2E4EA; border-radius: 6px; overflow: hidden; }
+  .sprint-head { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .sprint-head h3 { font-size: 13px; font-weight: 700; color: #fff; }
+  .sprint-head .sp-goal { font-size: 11px; color: rgba(255,255,255,0.75); }
+  .sprint-1 .sprint-head { background: #C0392B; }
+  .sprint-2 .sprint-head { background: #D68910; }
+  .sprint-body { padding: 12px 16px; }
+  .sprint-task { padding: 5px 0; border-bottom: 1px solid #F2F3F7; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .sprint-task:last-child { border-bottom: none; }
+  .sprint-task-name { flex: 1; }
+  .sprint-task-h { font-weight: 700; font-size: 11px; color: #555; width: 50px; text-align: right; }
+  .sprint-total { padding: 10px 0 0; font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; border-top: 2px solid #E2E4EA; margin-top: 8px; }
+
+  @media (max-width: 900px) {
+    .legend, .stats { grid-template-columns: repeat(2, 1fr); }
+    .mvp-grid { grid-template-columns: 1fr; }
+    .mvp-metrics { grid-template-columns: repeat(2, 1fr); }
+    .section, .mvp-section, .sprints-section, .flow-section, .effort-section { padding: 20px; }
+    .sprint-grid { grid-template-columns: 1fr; }
+    .flow { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <h1>Kiss My Flowers — MoSCoW Пріоритизація</h1>
+  <p>Класифікація всіх функцій проекту за методом MoSCoW. На основі пріоритизації визначено MVP-скоуп —
+  мінімальний функціонал, що дозволяє запустити продукт і отримати перший дохід.</p>
+  <div class="hdr-sub">
+    <div class="project-tag">51 функція</div>
+    <div class="project-tag">home work 7.1 · Jira</div>
+    <div class="project-tag">SCRUM-mapped</div>
+    <div class="project-tag">MoSCoW Method</div>
+  </div>
+</div>
+
+<!-- MOSCOW LEGEND -->
+<div class="legend">
+  <div class="leg-card leg-m">
+    <div class="leg-letter m-col">M</div>
+    <div class="leg-word" style="color:#C0392B">Must Have</div>
+    <div class="leg-desc">Критичні вимоги. Без них продукт не працює. Входять до MVP без обговорення. Якщо хоч одна відсутня — MVP провалюється.</div>
+  </div>
+  <div class="leg-card leg-s">
+    <div class="leg-letter s-col">S</div>
+    <div class="leg-word" style="color:#D68910">Should Have</div>
+    <div class="leg-desc">Важливі, але MVP може запустити без них. Додаються одразу після стабілізації MVP (v1.1). Тимчасово замінюються ручними процесами.</div>
+  </div>
+  <div class="leg-card leg-c">
+    <div class="leg-letter c-col">C</div>
+    <div class="leg-word" style="color:#2980B9">Could Have</div>
+    <div class="leg-desc">Цінні для product growth але з низьким впливом якщо відкласти. Плануються на v2.0 після підтвердження product-market fit.</div>
+  </div>
+  <div class="leg-card leg-w">
+    <div class="leg-letter w-col">W</div>
+    <div class="leg-word" style="color:#7F8C8D">Won't Have</div>
+    <div class="leg-desc">Явно виключено з поточного релізу. Або операційні задачі (не розробка), або залежать від Could Have, або технічно передчасні.</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val m-col">23</div>
+    <div class="stat-unit">задачі · 180.3 год</div>
+    <div class="stat-lbl">Must Have (MVP)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val s-col">12</div>
+    <div class="stat-unit">задачі · 94.9 год</div>
+    <div class="stat-lbl">Should Have (v1.1)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val c-col">10</div>
+    <div class="stat-unit">задач · 101 год</div>
+    <div class="stat-lbl">Could Have (v2.0)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val w-col">6</div>
+    <div class="stat-unit">позицій · 120.9 год</div>
+    <div class="stat-lbl">Won't Have</div>
+  </div>
+</div>
+
+<!-- EFFORT BAR -->
+<div class="effort-section">
+  <div class="effort-title">Розподіл трудовитрат за MoSCoW (497.1 год)</div>
+  <div class="effort-bar">
+    <div class="eb-m"><span class="eb-label">Must · 36.3%</span></div>
+    <div class="eb-s"><span class="eb-label">Should · 19.1%</span></div>
+    <div class="eb-c"><span class="eb-label">Could · 20.3%</span></div>
+    <div class="eb-w"><span class="eb-label">Won't · 24.3%</span></div>
+  </div>
+  <div class="effort-legend">
+    <div class="el-item"><div class="el-dot" style="background:#E74C3C"></div> Must Have — MVP-скоуп</div>
+    <div class="el-item"><div class="el-dot" style="background:#F39C12"></div> Should Have — Sprint post-MVP</div>
+    <div class="el-item"><div class="el-dot" style="background:#3498DB"></div> Could Have — Roadmap v2.0</div>
+    <div class="el-item"><div class="el-dot" style="background:#BDC3C7"></div> Won't Have — Out of scope</div>
+  </div>
+</div>
+
+<!-- MVP FLOW -->
+<div class="flow-section">
+  <div class="flow-title">MVP User Journey (тільки Must Have функції)</div>
+  <div class="flow">
+    <div class="flow-step"><div class="fs-icon">🌸</div>Каталог<div class="fs-tag">SCRUM-08/09</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">🛒</div>Checkout<div class="fs-tag">SCRUM-11/12/13</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">💳</div>Stripe<div class="fs-tag">SCRUM-14/15/16</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">📍</div>Hub Router<div class="fs-tag">SCRUM-19</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">💐</div>Florist WA<div class="fs-tag">SCRUM-20/21</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">🛵</div>Courier WA<div class="fs-tag">SCRUM-22</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-icon">📊</div>Admin<div class="fs-tag">SCRUM-27/29</div></div>
+  </div>
+  <div class="mvp-note">
+    <b>MVP = цей flow від початку до кінця.</b> Клієнт платить → флорист збирає → кур'єр доставляє → адмін бачить все в реальному часі.
+    Все решта — покращення поверх цього ядра.
+  </div>
+</div>
+
+<!-- MUST HAVE TABLE -->
+<div class="section">
+  <div class="section-header bg-m" style="margin-bottom:0">
+    <div class="sh-letter" style="color:rgba(255,255,255,0.3)">M</div>
+    <div class="sh-info">
+      <div class="sh-title">Must Have — Критичний функціонал MVP</div>
+      <div class="sh-sub">Без будь-якої з цих задач продукт не може бути запущено</div>
+    </div>
+    <div class="sh-stats">
+      <div class="sh-stat"><div class="sh-stat-val">23</div><div class="sh-stat-lbl">задачі</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">180.3</div><div class="sh-stat-lbl">годин</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">22.5</div><div class="sh-stat-lbl">людино-днів</div></div>
+    </div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>SCRUM</th><th>Епік</th><th>Функціонал</th><th>Обґрунтування (чому MUST)</th><th class="c-center">Год</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-01</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>Технічний стек (Next.js 16 + Supabase + Tailwind v4)</td><td class="td-reason">Нема стеку — нема продукту. Перша задача будь-якого проекту.</td><td class="td-h">4.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-02</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>GitHub Actions CI (tsc + vitest + next build)</td><td class="td-reason">Без CI будь-який push може зламати prod. Мінімальний gate якості.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-03</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>Проектування схеми БД (8 таблиць + RLS + pgvector)</td><td class="td-reason">Помилка в схемі = дорогий рефакторинг. Фундамент всього.</td><td class="td-h">9.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-04</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>Supabase міграції 01–05 (products / orders / hubs / couriers)</td><td class="td-reason">Без таблиць orders і products каталог і checkout не існують.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-05</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>Supabase міграції 06–10 (agent_reports / namedays тощо)</td><td class="td-reason">Краще закласти повну схему одразу ніж мігрувати в prod пізніше.</td><td class="td-h">6.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-06</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>PIN аутентифікація + rate limit 5/15 хв</td><td class="td-reason">Без захисту будь-хто бачить дані клієнтів. Регуляторний ризик.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-07</a></td><td class="td-epic"><span class="epic-tag epic-core">CORE</span></td><td>Middleware захист /admin/* та /hub/*</td><td class="td-reason">Без middleware адмінка відкрита будь-якому URL-запиту.</td><td class="td-h">4.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-08</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Storefront / каталог (ProductCard + EUR/BGN ціни)</td><td class="td-reason">Головна сторінка — точка входу. Без каталогу нема що купити.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-09</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Фільтрація за тегами (Бестселлер / Сезонний / Преміум)</td><td class="td-reason">Без фільтрів клієнт не знаходить потрібний букет за бюджетом.</td><td class="td-h">4.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-11</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Checkout Step 1–2: букет + адреса + зона (Haversine)</td><td class="td-reason">Без адреси і зони система не знає куди доставляти. Блокує весь dispatch.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-12</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Checkout Step 3–4: дата/час + контактні дані</td><td class="td-reason">Дата і телефон обов'язкові для підтвердження і координації.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-13</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Checkout Step 5: підсумок + isOddFlowerCount + Stripe redirect</td><td class="td-reason">Непарна кількість — культурна норма Болгарії. Порушення = образа клієнта.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-14</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Stripe Checkout Session (server-side, PCI-DSS)</td><td class="td-reason">Без оплати немає бізнесу. Stripe — єдиний спосіб прийняти картку безпечно.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-15</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Stripe Webhook + idempotency key</td><td class="td-reason">Без webhook замовлення не стартує після оплати. Ідемпотентність = no double orders.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-16</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>Сторінка Success після оплати</td><td class="td-reason">Клієнт має підтвердження. Без нього — дзвінки в підтримку і недовіра.</td><td class="td-h">4.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-18</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>WhatsApp Cloud API (lib/whatsapp.ts)</td><td class="td-reason">WA — єдиний канал з флористом і кур'єром. Без нього весь dispatch недоступний.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-19</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Алгоритм маршрутизації Hub (Haversine + сортування)</td><td class="td-reason">Без routing замовлення не знає до якого хабу направлятись.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-20</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>WA флористу — склад + адреса + кнопки Accept/Reject</td><td class="td-reason">Флорист приймає замовлення через WA. Без повідомлення — флорист нічого не знає.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-21</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Таймаут 5 хвилин + автопереключення на наступний Hub</td><td class="td-reason">Без таймауту замовлення зависає назавжди. SLA 2 год порушується.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-22</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Broadcast dispatch кур'єрам (first-wins атомарний запис)</td><td class="td-reason">Без dispatch кур'єр не дізнається про замовлення. Доставка фізично неможлива.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-26</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Cron dispatch-timeout — ескалація кожні 2 хвилини</td><td class="td-reason">Без моніторингу прострочені замовлення ніхто не бачить. SLA порушується тихо.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-27</a></td><td class="td-epic"><span class="epic-tag epic-admin">ADMIN</span></td><td>Admin Dashboard — таблиця замовлень + Realtime</td><td class="td-reason">Адмін повинен бачити всі замовлення. Без цього — сліпота і неможливість реагувати.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-m">SCRUM-29</a></td><td class="td-epic"><span class="epic-tag epic-admin">ADMIN</span></td><td>Escalation alert — needs_attention + виділення</td><td class="td-reason">Без сигналу ескалації адмін не реагує на затримки. SLA під загрозою.</td><td class="td-h">4.7</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SHOULD HAVE -->
+<div class="section">
+  <div class="section-header bg-s" style="margin-bottom:0">
+    <div class="sh-letter" style="color:rgba(255,255,255,0.3)">S</div>
+    <div class="sh-info">
+      <div class="sh-title">Should Have — Важливо для якості (v1.1, одразу після MVP)</div>
+      <div class="sh-sub">Відсутність тимчасово компенсується ручними процесами або обхідними шляхами</div>
+    </div>
+    <div class="sh-stats">
+      <div class="sh-stat"><div class="sh-stat-val">12</div><div class="sh-stat-lbl">задач</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">94.9</div><div class="sh-stat-lbl">годин</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">11.9</div><div class="sh-stat-lbl">людино-днів</div></div>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>SCRUM</th><th>Епік</th><th>Функціонал</th><th>Тимчасова заміна на MVP</th><th class="c-center">Год</th></tr></thead>
+    <tbody>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-10</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>AI Finder — wizard (30 комбінацій отримувач × привід)</td><td class="td-reason">Клієнт обирає вручну з каталогу. AI Finder підвищує конверсію але не блокує продаж.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-17</a></td><td class="td-epic"><span class="epic-tag epic-shop">SHOP</span></td><td>PWA — manifest + Service Worker + Install Banner</td><td class="td-reason">Замовлення через звичайний браузер. PWA покращує UX але не блокує замовлення.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-23</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>WhatsApp медіа webhook — прийом фото від кур'єра</td><td class="td-reason">Адмін виставляє статус delivered вручну. Фото підтвердження додає довіру але не блокує доставку.</td><td class="td-h">9.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-24</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Фото → Storage + автостатус delivered + WA клієнту</td><td class="td-reason">Адмін закриває замовлення вручну + WA з телефону. Ручний процес достатній для MVP.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-25</a></td><td class="td-epic"><span class="epic-tag epic-ops">OPS</span></td><td>Cron nameday-reminders (09:00 щодня)</td><td class="td-reason">Маркетинговий інструмент. Без нього клієнт просто не отримує нагадування — але не заважає core flow.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-28</a></td><td class="td-epic"><span class="epic-tag epic-admin">ADMIN</span></td><td>Admin — ручна зміна статусу + переназначення кур'єра</td><td class="td-reason">Edge cases вирішуються через Supabase Dashboard. Незручно але можливо.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-38</a></td><td class="td-epic"><span class="epic-tag epic-admin">ADMIN</span></td><td>CRUD каталогу + завантаження фото (Storage)</td><td class="td-reason">Адмін редагує продукти через Supabase Dashboard. Незручно, але не блокує продажі.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-45</a></td><td class="td-epic"><span class="epic-tag epic-test">TEST</span></td><td>Unit тести Vitest × 16 (isOddFlower + EUR/BGN + Haversine)</td><td class="td-reason">Ручне тестування на MVP. Але unit тести критичних бізнес-правил потрібні дуже скоро.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-47</a></td><td class="td-epic"><span class="epic-tag epic-test">TEST</span></td><td>Integration тест — POST /api/orders (повний flow)</td><td class="td-reason">Основний ендпоінт повинен мати тест. Без нього будь-який рефакторинг ризикований.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-50</a></td><td class="td-epic"><span class="epic-tag epic-seo">SEO</span></td><td>Meta tags + Open Graph + Schema.org LocalBusiness</td><td class="td-reason">Без SEO Google не індексує. Але перші клієнти приходять через рекомендації, не пошук.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-51</a></td><td class="td-epic"><span class="epic-tag epic-seo">SEO</span></td><td>Sitemap.xml + robots.txt</td><td class="td-reason">Технічний SEO. Потрібен для індексації але не критично в перший тиждень.</td><td class="td-h">4.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-s">SCRUM-53</a></td><td class="td-epic"><span class="epic-tag epic-seo">SEO</span></td><td>Privacy Policy + Terms + Cookie Consent (GDPR)</td><td class="td-reason">Юридично важливо для EU. Може бути статичною сторінкою на старті.</td><td class="td-h">6.7</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- COULD HAVE -->
+<div class="section">
+  <div class="section-header bg-c" style="margin-bottom:0">
+    <div class="sh-letter" style="color:rgba(255,255,255,0.3)">C</div>
+    <div class="sh-info">
+      <div class="sh-title">Could Have — Цінне для зростання (Roadmap v2.0)</div>
+      <div class="sh-sub">Низький вплив якщо відкласти. Плануються після підтвердження product-market fit</div>
+    </div>
+    <div class="sh-stats">
+      <div class="sh-stat"><div class="sh-stat-val">10</div><div class="sh-stat-lbl">задач</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">101.0</div><div class="sh-stat-lbl">годин</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">12.6</div><div class="sh-stat-lbl">людино-днів</div></div>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>SCRUM</th><th>Епік</th><th>Функціонал</th><th>Чому відкладено</th><th class="c-center">Год</th></tr></thead>
+    <tbody>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-30</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Інструменти агентів (4 функції запитів до БД)</td><td class="td-reason">Потрібні тільки якщо є агенти. Цінно для власника — не для клієнта на MVP.</td><td class="td-h">13.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-41</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Агент-бухгалтер (Claude claude-opus-4-8 + болгарські податки)</td><td class="td-reason">Цінно але реальний бухгалтер може це робити перший рік. Потрібен масив даних для аналізу.</td><td class="td-h">14.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-42</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Агент-юрист (оптимізація ЕООД/ЄТ/ГД структур)</td><td class="td-reason">Стратегічна цінність але не операційна необхідність на старті.</td><td class="td-h">13.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-43</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Агент-маркетолог (конверсія + A/B ідеї + сезони)</td><td class="td-reason">Немає сенсу аналізувати без достатнього масиву замовлень (мінімум 50+).</td><td class="td-h">12.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-44</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Cron jobs для 3 агентів + збереження agent_reports</td><td class="td-reason">Залежить від SCRUM-41/42/43. Відкладається разом з ними.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-37</a></td><td class="td-epic"><span class="epic-tag epic-admin">ADMIN</span></td><td>Перегляд AI-звітів в панелі Admin</td><td class="td-reason">Адмін читає звіти через WA на MVP. Залежить від Could Have агентів.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-48</a></td><td class="td-epic"><span class="epic-tag epic-test">TEST</span></td><td>Integration тест — Stripe webhook idempotency</td><td class="td-reason">Stripe надійний сам по собі. Ручне тестування + Stripe Dashboard достатньо для MVP.</td><td class="td-h">11.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-49</a></td><td class="td-epic"><span class="epic-tag epic-test">TEST</span></td><td>Integration тест — WhatsApp webhook routing</td><td class="td-reason">Важливо для регресій але не блокує перший запуск при ретельному ручному тестуванні.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-39</a></td><td class="td-epic"><span class="epic-tag epic-seo">SEO</span></td><td>Google Business Profile (Бургас локальний SEO)</td><td class="td-reason">Верифікація займає тижні (лист поштою). Не блокує запуск, але важлива для органіки.</td><td class="td-h">4.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-c">SCRUM-52</a></td><td class="td-epic"><span class="epic-tag epic-seo">SEO</span></td><td>Instagram/соцмережі контент (фото + тексти + хештеги)</td><td class="td-reason">Маркетинг важливий але не технічна розробка. Паралельна операційна задача.</td><td class="td-h">6.3</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- WON'T HAVE -->
+<div class="section">
+  <div class="section-header bg-w" style="margin-bottom:0">
+    <div class="sh-letter" style="color:rgba(255,255,255,0.3)">W</div>
+    <div class="sh-info">
+      <div class="sh-title">Won't Have — Явно поза скоупом цього релізу</div>
+      <div class="sh-sub">Операційні задачі, залежності від Could Have, або технічно передчасні</div>
+    </div>
+    <div class="sh-stats">
+      <div class="sh-stat"><div class="sh-stat-val">6</div><div class="sh-stat-lbl">позицій</div></div>
+      <div class="sh-stat"><div class="sh-stat-val">120.9</div><div class="sh-stat-lbl">годин</div></div>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>SCRUM</th><th>Епік</th><th>Функціонал</th><th>Причина виключення</th><th class="c-center">Год</th></tr></thead>
+    <tbody>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-36</a></td><td class="td-epic"><span class="epic-tag epic-ai">AI АГЕ</span></td><td>Заповнення knowledge_documents (20+ документів)</td><td class="td-reason">Без Could Have агентів — база знань марна. Контент-робота з низьким ROI на старті.</td><td class="td-h">13.3</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-40</a></td><td class="td-epic"><span class="epic-tag epic-test">TEST</span></td><td>E2E Playwright — повний flow checkout → Stripe → Hub → фото</td><td class="td-reason">Найдорожчий тест (16 год). Нестабільний на зовнішніх сервісах. Ручний smoke test достатній.</td><td class="td-h">16.0</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-46</a></td><td class="td-epic"><span class="epic-tag epic-gtm">GTM</span></td><td>Onboarding першого Hub (навчання флориста + тест flow)</td><td class="td-reason">Операційна задача, не технічна. Виконується після деплою адміном, не розробником.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-55</a></td><td class="td-epic"><span class="epic-tag epic-gtm">GTM</span></td><td>Onboarding кур'єрів (3-5 осіб + тест dispatch)</td><td class="td-reason">Операційна задача. Виконується власником після запуску, а не в спринті розробки.</td><td class="td-h">6.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-54</a></td><td class="td-epic"><span class="epic-tag epic-gtm">GTM</span></td><td>Go-live checklist (7 воріт безпеки)</td><td class="td-reason">Процедурний документ, не задача розробки. Виконується прямо перед запуском.</td><td class="td-h">8.7</td></tr>
+      <tr><td class="td-id"><a class="scrum-link scrum-w">SCRUM-56-64</a></td><td class="td-epic"><span class="epic-tag epic-design">DESIGN</span></td><td>Figma wireframes (9 сторінок) + Design System</td><td class="td-reason">Figma — передумова розробки, не її частина. Виконується ДО спринтів як окрема Design фаза.</td><td class="td-h">69.5</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MVP DEFINITION -->
+<div class="mvp-section">
+  <div class="mvp-title">
+    <span class="mvp-badge">MVP</span>
+    Визначення мінімального продукту
+  </div>
+
+  <div class="mvp-grid">
+    <div class="mvp-col">
+      <h3>✅ Що входить в MVP (Must Have)</h3>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Каталог букетів</b> — список з EUR/BGN цінами та тегами</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Checkout 5 кроків</b> — адреса + дата + оплата Stripe</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Stripe оплата</b> — PCI-DSS compliant, webhook + idempotency</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>WhatsApp флористу</b> — деталі + кнопки Accept/Reject</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>5-хв таймаут</b> — автопереключення на наступний Hub</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Broadcast кур'єрам</b> — first-wins атомарний dispatch</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Admin Dashboard</b> — Realtime перегляд + ескалація</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>PIN аутентифікація</b> — /admin/* та /hub/* захищено</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Cron ескалація</b> — перевірка SLA кожні 2 хвилини</span></div>
+      <div class="mvp-item"><span class="mvp-check">✓</span><span class="mvp-txt"><b>Інфраструктура</b> — DB схема, міграції, CI, middleware</span></div>
+    </div>
+    <div class="mvp-col">
+      <h3>❌ Що НЕ входить в MVP</h3>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>AI Finder</b> — клієнт обирає вручну з каталогу (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>Фото доставки</b> — адмін закриває замовлення вручну (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>Admin CRUD каталогу</b> — редагування через Supabase Dashboard (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>PWA / офлайн</b> — замовлення через браузер (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>Іменинники</b> — маркетинг, не блокує core flow (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>AI Агенти</b> — бухгалтер / юрист / маркетолог (→ v2.0)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>Hub Dashboard</b> — флорист управляє через WA (→ v1.1)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>E2E Playwright</b> — ручний smoke test достатній (→ v2.0)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>Figma дизайн</b> — виконується до спринтів (Pre-dev фаза)</span></div>
+      <div class="mvp-item"><span class="mvp-cross">✗</span><span class="mvp-txt"><b>GTM / Onboarding</b> — операційна задача після деплою</span></div>
+    </div>
+  </div>
+
+  <div class="mvp-metrics">
+    <div class="mm">
+      <div class="mm-lbl">MVP оцінка</div>
+      <div class="mm-val">180.3</div>
+      <div class="mm-unit">годин (Must Have)</div>
+    </div>
+    <div class="mm">
+      <div class="mm-lbl">Людино-дні</div>
+      <div class="mm-val">22.5</div>
+      <div class="mm-unit">робочих дні (8 год)</div>
+    </div>
+    <div class="mm">
+      <div class="mm-lbl">Тривалість</div>
+      <div class="mm-val">1.1</div>
+      <div class="mm-unit">місяці (20 днів/міс)</div>
+    </div>
+    <div class="mm">
+      <div class="mm-lbl">Must Have задачі</div>
+      <div class="mm-val">23</div>
+      <div class="mm-unit">з 51 загальних</div>
+    </div>
+  </div>
+</div>
+
+<!-- SPRINT PLAN -->
+<div class="sprints-section">
+  <div class="sprint-title">Рекомендований план спринтів на MVP (Must Have задачі)</div>
+  <div class="sprint-grid">
+    <div class="sprint-card sprint-1">
+      <div class="sprint-head">
+        <h3>Sprint 1 — Ядро та Оплата</h3>
+        <div class="sp-goal">~91 год · 2 тижні</div>
+      </div>
+      <div class="sprint-body">
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-01/02/03 — Стек + CI + DB схема</span><span class="sprint-task-h">22.4</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-04/05 — Supabase міграції 01–10</span><span class="sprint-task-h">13.0</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-06/07 — PIN auth + Middleware</span><span class="sprint-task-h">13.4</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-08/09 — Storefront + фільтри</span><span class="sprint-task-h">13.4</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-11/12/13 — Checkout 5 кроків</span><span class="sprint-task-h">26.4</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-14/15/16 — Stripe + Webhook + Success</span><span class="sprint-task-h">24.4</span></div>
+        <div class="sprint-total"><span>Sprint 1 разом</span><span>113.0 год</span></div>
+      </div>
+    </div>
+    <div class="sprint-card sprint-2">
+      <div class="sprint-head">
+        <h3>Sprint 2 — Dispatch та Admin</h3>
+        <div class="sp-goal">~67 год · 2 тижні</div>
+      </div>
+      <div class="sprint-body">
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-18 — WhatsApp Cloud API</span><span class="sprint-task-h">8.7</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-19 — Haversine Hub routing</span><span class="sprint-task-h">8.7</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-20 — WA повідомлення флористу</span><span class="sprint-task-h">8.7</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-21 — Таймаут 5 хв + автопереключення</span><span class="sprint-task-h">11.0</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-22 — Broadcast dispatch кур'єрам</span><span class="sprint-task-h">11.0</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-26 — Cron ескалація кожні 2 хв</span><span class="sprint-task-h">6.7</span></div>
+        <div class="sprint-task"><span class="sprint-task-name">SCRUM-27/29 — Admin Dashboard + alerts</span><span class="sprint-task-h">15.7</span></div>
+        <div class="sprint-total"><span>Sprint 2 разом</span><span>70.5 год</span></div>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:16px; font-size:12px; color:#888;">
+    💡 <b>Мета Sprint 1:</b> Клієнт може знайти букет, оплатити і отримати сторінку підтвердження.<br>
+    💡 <b>Мета Sprint 2:</b> Замовлення автоматично доходить до флориста → кур'єра → адмін бачить все в реальному часі.
+  </p>
+</div>
+
+</body>
+</html>

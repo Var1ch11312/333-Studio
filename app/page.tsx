@@ -1,14 +1,8 @@
 import { LandingPage } from "@/components/LandingPage";
-import type { CatalogProduct } from "@/components/CatalogClient";
+import { PRODUCTS } from "@/lib/catalog";
+import type { CatalogProduct } from "@/lib/catalog";
 
-const FALLBACK: CatalogProduct[] = [
-  { id: "1", title: "Розова Елегантност",  description: "25 бели и розови рози, ароматни лилии, gypsophila",        price_eur: 45,  flower_count: 25, tag: "Бестселър",  image_url: null },
-  { id: "2", title: "Алена Страст",        description: "21 червени рози Ecuador, бабий лен, декоративна зеленина", price_eur: 55,  flower_count: 21, tag: null,         image_url: null },
-  { id: "3", title: "Бяла Приказка",       description: "17 бели рози, орхидея Dendrobium, еустома",                price_eur: 65,  flower_count: 17, tag: "Премиум",    image_url: null },
-  { id: "4", title: "Пролетна Радост",     description: "Сезонни цветя — лалета, нарциси, хиацинти",               price_eur: 39,  flower_count: 15, tag: null,         image_url: null },
-  { id: "5", title: "Корпоративен Шик",    description: "51 смесени рози, монобукет с луксозна опаковка",           price_eur: 110, flower_count: 51, tag: "B2B",        image_url: null },
-  { id: "6", title: "Изненада за Именник", description: "Персонализиран букет — свободен избор на флориста",        price_eur: 35,  flower_count: 11, tag: "Именен ден", image_url: null },
-];
+const FALLBACK: CatalogProduct[] = PRODUCTS;
 
 async function fetchProducts(): Promise<CatalogProduct[]> {
   try {

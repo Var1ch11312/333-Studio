@@ -34,19 +34,19 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AMUR.BG — Dostavka na tsveta v Burgas",
+  title: "Kiss My Flowers — Любов и романтика, доставка в Бургас",
   description:
-    "Premium dostavka na buketi v Burgas za pod 2 chasa. Protokol Beli rakavitsi.",
-  keywords: ["tsvetya", "Burgas", "dostavka tsvetya", "buketi", "amur.bg"],
+    "Романтични букети с доставка за под 2 часа в Бургас. Рози, божури и любов — ръчно подбрани от нашите флористи.",
+  keywords: ["цветя", "Бургас", "доставка цветя", "букети", "рози", "kiss my flowers", "романтика"],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "AMUR",
+    statusBarStyle: "default",
+    title: "Kiss My Flowers",
   },
   openGraph: {
-    title: "AMUR.BG",
-    description: "Premium dostavka na buketi v Burgas",
+    title: "Kiss My Flowers",
+    description: "Романтични букети с доставка за под 2 часа в Бургас",
     locale: "bg_BG",
     type: "website",
   },
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#C5A059",
+  themeColor: "#FBF6F3",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

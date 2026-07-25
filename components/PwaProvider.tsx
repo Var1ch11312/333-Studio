@@ -64,32 +64,32 @@ export function PwaProvider() {
     <div
       className="fixed bottom-20 left-3 right-3 z-50 rounded-2xl p-4 flex items-center gap-3 md:left-auto md:right-4 md:w-80"
       style={{
-        background: "rgba(28,25,21,0.97)",
-        border: "1px solid rgba(197,160,89,0.28)",
+        background: "rgba(255,255,255,0.98)",
+        border: "1px solid #ECDFD9",
         backdropFilter: "blur(24px)",
         boxShadow:
-          "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(197,160,89,0.1)",
+          "0 12px 40px rgba(122,39,56,0.16)",
       }}
     >
       {/* Icon */}
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
         style={{
-          background: "rgba(197,160,89,0.1)",
-          border: "1px solid rgba(197,160,89,0.2)",
+          background: "#F5E4E5",
+          border: "1px solid #EFCBD0",
         }}
       >
-        <span style={{ fontSize: 24 }}>✿</span>
+        <span style={{ fontSize: 24, color: "#A8324A" }}>✿</span>
       </div>
 
       {/* Text */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold" style={{ color: "#EDE5D5" }}>
-          Инсталирай AMUR
+        <p className="text-sm font-semibold" style={{ color: "#2B2220" }}>
+          Инсталирай Kiss My Flowers
         </p>
         <p
           className="text-[11px] mt-0.5 leading-snug"
-          style={{ color: "rgba(249,246,240,0.45)" }}
+          style={{ color: "#9B8B84" }}
         >
           Добави на началния екран — работи офлайн
         </p>
@@ -101,8 +101,8 @@ export function PwaProvider() {
           onClick={handleInstall}
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold"
           style={{
-            background: "linear-gradient(135deg, #C5A059 0%, #9A7A35 100%)",
-            color: "#180F04",
+            background: "linear-gradient(135deg, #C24B5E 0%, #8E2438 100%)",
+            color: "#FFFFFF",
           }}
         >
           <Download className="w-3.5 h-3.5" />
@@ -111,7 +111,7 @@ export function PwaProvider() {
         <button
           onClick={handleDismiss}
           className="w-7 h-7 flex items-center justify-center rounded-lg"
-          style={{ color: "rgba(249,246,240,0.35)" }}
+          style={{ color: "#B7A8A1" }}
         >
           <X className="w-4 h-4" />
         </button>

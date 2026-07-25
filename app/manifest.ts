@@ -2,16 +2,16 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AMUR.BG — Цветя с характер",
-    short_name: "AMUR",
+    name: "Kiss My Flowers — Любов и романтика",
+    short_name: "Kiss My Flowers",
     description:
-      "Хипер-локална доставка на букети в Бургас до 2 часа. Протокол Бели ръкавици.",
+      "Романтични букети с доставка за под 2 часа в Бургас. Любов, опакована с грижа.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#0A0907",
-    theme_color: "#C5A059",
+    background_color: "#FBF6F3",
+    theme_color: "#A8324A",
     lang: "bg",
     categories: ["shopping", "lifestyle"],
     icons: [

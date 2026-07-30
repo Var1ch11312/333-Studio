@@ -37,6 +37,8 @@ def test_normalize_extracts_model_storage_color_and_defect() -> None:
     assert result.product.year == 2021
     assert "спукан екран" in result.defects_json.lower()
     assert result.ask_eur == Decimal("383.45")
+    # a cracked screen is a defect, not grounds to call the whole phone broken
+    assert result.condition == Condition.GOOD
 
 
 def test_normalize_detects_like_new_condition() -> None:

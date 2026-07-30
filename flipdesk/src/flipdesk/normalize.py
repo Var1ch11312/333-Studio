@@ -100,8 +100,7 @@ _CONDITION_KEYWORDS: list[tuple[str, Condition]] = [
     ("задоволително", Condition.FAIR),
     ("не работи", Condition.BROKEN),
     ("за части", Condition.BROKEN),
-    ("счупен", Condition.BROKEN),
-    ("спукан", Condition.BROKEN),
+    ("счупен телефон", Condition.BROKEN),
 ]
 
 _DEFECT_KEYWORDS = [
